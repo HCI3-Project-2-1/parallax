@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/pedro/uni/year_2/hci/project/build",
+  "command": "/sbin/clang++  -I/home/pedro/uni/year_2/hci/project/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gen/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gdextension -std=gnu++23 -o CMakeFiles/parallax.dir/src/main.cpp.o -c /home/pedro/uni/year_2/hci/project/src/main.cpp",
+  "file": "/home/pedro/uni/year_2/hci/project/src/main.cpp",
+  "output": "CMakeFiles/parallax.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/pedro/uni/year_2/hci/project/build",
+  "command": "/sbin/clang++  -I/home/pedro/uni/year_2/hci/project/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gen/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gdextension -std=gnu++23 -o CMakeFiles/parallax.dir/src/bridge/bridge.cpp.o -c /home/pedro/uni/year_2/hci/project/src/bridge/bridge.cpp",
+  "file": "/home/pedro/uni/year_2/hci/project/src/bridge/bridge.cpp",
+  "output": "CMakeFiles/parallax.dir/src/bridge/bridge.cpp.o"
+},
+{
+  "directory": "/home/pedro/uni/year_2/hci/project/build",
+  "command": "/sbin/clang++  -I/home/pedro/uni/year_2/hci/project/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gen/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gdextension -std=gnu++23 -o CMakeFiles/parallax.dir/src/engine/engine.cpp.o -c /home/pedro/uni/year_2/hci/project/src/engine/engine.cpp",
+  "file": "/home/pedro/uni/year_2/hci/project/src/engine/engine.cpp",
+  "output": "CMakeFiles/parallax.dir/src/engine/engine.cpp.o"
+},
+{
+  "directory": "/home/pedro/uni/year_2/hci/project/build",
+  "command": "/sbin/clang++  -I/home/pedro/uni/year_2/hci/project/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gen/include -I/home/pedro/uni/year_2/hci/project/include/godot-cpp/gdextension -std=gnu++23 -o CMakeFiles/parallax.dir/src/vision/vision.cpp.o -c /home/pedro/uni/year_2/hci/project/src/vision/vision.cpp",
+  "file": "/home/pedro/uni/year_2/hci/project/src/vision/vision.cpp",
+  "output": "CMakeFiles/parallax.dir/src/vision/vision.cpp.o"
+}
+]
