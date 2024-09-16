@@ -1,1 +1,0 @@
-/sbin/clang++ CMakeFiles/parallax.dir/src/main.cpp.o CMakeFiles/parallax.dir/src/bridge/bridge.cpp.o CMakeFiles/parallax.dir/src/engine/engine.cpp.o CMakeFiles/parallax.dir/src/vision/vision.cpp.o -o parallax  /home/pedro/uni/year_2/hci/project/lib/libgodot-cpp.linux.template_debug.x86_64.a

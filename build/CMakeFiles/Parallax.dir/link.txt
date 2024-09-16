@@ -1,1 +1,0 @@
-/sbin/clang++ CMakeFiles/Parallax.dir/src/main.cpp.o CMakeFiles/Parallax.dir/src/bridge/bridge.cpp.o -o Parallax

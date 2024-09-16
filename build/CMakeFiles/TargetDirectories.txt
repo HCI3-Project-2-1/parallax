@@ -1,3 +1,0 @@
-/home/pedro/uni/year_2/hci/project/build/CMakeFiles/parallax.dir
-/home/pedro/uni/year_2/hci/project/build/CMakeFiles/edit_cache.dir
-/home/pedro/uni/year_2/hci/project/build/CMakeFiles/rebuild_cache.dir
