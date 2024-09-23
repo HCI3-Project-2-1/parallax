@@ -57,7 +57,7 @@ while cap.isOpened():
             message = f"{norm_x:.4f},{norm_y:.4f}"
             sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
 
-            # Draw face detection annotations on the frame (optional)
+            # Draw face detection annotations on the frame
             mp_drawing.draw_detection(frame, detection)
 
     # Show the video frame with face detections
