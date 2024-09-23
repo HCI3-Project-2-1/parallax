@@ -1,5 +1,5 @@
-#ifndef VISION_H
-#define VISION_H
+#ifndef VISION_HPP
+#define VISION_HPP
 
 namespace vision {
 struct EyeScreenPosition {
