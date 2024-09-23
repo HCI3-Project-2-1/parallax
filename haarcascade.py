@@ -1,91 +1,105 @@
 import cv2
+import matplotlib.pyplot as plt
 import socket
 
-# Load the pre-trained classifier for face detection
+# Load the pre-trained classifiers for face and eye detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# UDP setup to send data to Godot
-UDP_IP = "127.0.0.1"  # Godot listening on localhost
+# UDP setup to send data to Unity
+UDP_IP = "127.0.0.1"  # Unity listening on localhost
 UDP_PORT = 12345
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Set a constant resolution to avoid dimension mismatch
-FRAME_WIDTH = 1920
-FRAME_HEIGHT = 1080
-
 # Function to return the center of the detected face
 def get_face_center(x, y, w, h):
-    return x + w // 2, y + h // 2
+    center_x = x + w // 2
+    center_y = y + h // 2
+    return center_x, center_y
 
 # Low-pass filter (Exponential Smoothing)
-alpha = 0.5  # Smoothing factor (adjustable for responsiveness/smoothness)
+alpha = 0.5  # Smoothing factor (adjustable)
 smoothed_x, smoothed_y = None, None
 
 def smooth_coordinates(center_x, center_y, smoothed_x, smoothed_y, alpha):
     if smoothed_x is None or smoothed_y is None:
-        return center_x, center_y
-    return alpha * center_x + (1 - alpha) * smoothed_x, alpha * center_y + (1 - alpha) * smoothed_y
+        smoothed_x, smoothed_y = center_x, center_y
+    else:
+        smoothed_x = alpha * center_x + (1 - alpha) * smoothed_x
+        smoothed_y = alpha * center_y + (1 - alpha) * smoothed_y
+    return smoothed_x, smoothed_y
 
-# Use a tracker to avoid redetecting the face in every frame
-tracker = cv2.TrackerKCF_create()
+# Initialize plot data
+x_data, y_data = [], []
+
+# Create a figure and axis for the live graph
+fig, ax = plt.subplots()
+ax.set_xlim(0, 1920)  # Assuming typical webcam resolution of 1080p
+ax.set_ylim(1080, 0)  # Reverse y-axis for proper display (OpenCV's coordinate system)
+ax.set_xlabel("X Coordinates")
+ax.set_ylabel("Y Coordinates")
+ax.set_title("Face Center Coordinates")
+
+# Plot initial data
+line, = ax.plot([], [], 'bo')
 
 # Start capturing video from the webcam
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)  # Set constant frame size
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
-
-init_tracking = False
 
 while True:
+    # Capture frame-by-frame
     ret, frame = cap.read()
+
     if not ret:
         break
 
+    # Convert the frame to grayscale (needed for Haar Cascade)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # If we're not tracking, perform face detection
-    if not init_tracking:
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
+    # Detect faces in the frame
+    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-        # Only initialize tracking if a face is detected
-        if len(faces) > 0:
-            (x, y, w, h) = faces[0]
-            tracker = cv2.TrackerKCF_create()  # Reset the tracker
-            tracker.init(frame, (x, y, w, h))  # Ensure tracker is initialized with the correct frame size
-            init_tracking = True
-    else:
-        # Update the tracker and get the new position of the face
-        success, box = tracker.update(frame)
-        if success:
-            (x, y, w, h) = [int(v) for v in box]
-        else:
-            # If tracking fails, reinitialize detection
-            init_tracking = False
-            continue  # Skip this frame if tracking failed
+    # Clear data for new frame
+    x_data.clear()
+    y_data.clear()
 
-    # Ensure x, y, w, h are defined before proceeding
-    if 'x' in locals():
-        # Compute the center of the face and apply smoothing
+    # Loop over all detected faces
+    for (x, y, w, h) in faces:
+        # Get the center of the face
         center_x, center_y = get_face_center(x, y, w, h)
+
+        # Apply the low-pass filter to smooth the coordinates
         smoothed_x, smoothed_y = smooth_coordinates(center_x, center_y, smoothed_x, smoothed_y, alpha)
 
-        # Normalize coordinates to range -1 to 1
-        norm_x = (smoothed_x / frame.shape[1] * 2) - 1
-        norm_y = -((smoothed_y / frame.shape[0] * 2) - 1)  # Invert Y-axis
-
-        # Send the normalized coordinates to Godot via UDP
-        message = f"{norm_x:.4f},{norm_y:.4f}"
-        sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
-
-        # Visualize (optional, can be removed for better performance)
+        # Draw a rectangle around the face and mark its center
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         cv2.circle(frame, (int(smoothed_x), int(smoothed_y)), 5, (0, 255, 0), -1)
+        cv2.putText(frame, f'Smoothed Center: ({int(smoothed_x)}, {int(smoothed_y)})', (x, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-    cv2.imshow('Face Tracking', frame)
+        # Append the smoothed center coordinates to the data lists
+        x_data.append(smoothed_x)
+        y_data.append(smoothed_y)
 
+        # Send the smoothed coordinates to Unity via UDP
+        message = f"{int(smoothed_x)},{int(smoothed_y)}"
+        sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
+
+    # Update the line on the graph
+    line.set_data(x_data, y_data)
+
+    # Redraw the matplotlib plot
+    plt.pause(0.01)  # Pause to allow the plot to update
+
+    # Display the resulting frame with detected faces and centers
+    cv2.imshow('Face Detection', frame)
+
+    # Break the loop if the 'q' key is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+# Release the capture and close any OpenCV windows
 cap.release()
 cv2.destroyAllWindows()
 sock.close()
+
+
