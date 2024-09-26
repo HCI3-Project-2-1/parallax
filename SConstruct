@@ -4,7 +4,7 @@
 env = SConscript("include/godot-cpp/SConstruct")
 
 # append the source directory to the include path
-env.Append(CPPPATH=["src/", "include/godot-cpp/include"])
+env.Append(CPPPATH=["src/", "include/godot-cpp/include", "include/opencv/include"])
 
 # lib binary output dir
 godot_project_bin = "godot_project/bin"

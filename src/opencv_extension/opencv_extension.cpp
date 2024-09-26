@@ -1,5 +1,6 @@
 #include "opencv_extension.hpp"
 #include <godot_cpp/core/class_db.hpp>
+#include <opencv2/core.hpp>
 
 using namespace godot;
 
