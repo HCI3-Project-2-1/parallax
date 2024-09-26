@@ -1,27 +1,27 @@
-# ./cache
-# ./venv
-#
-# .DS_Store
-# Thumbs.db
-#
-# build/
-# bin/
-# dist/
-#
-# .godot/shader_cache/
-# .godot/imported/
-# export_presets.cfg
-# *.import
-#
-# .sconsign.dblite
-#
-# *.so
-# *.dylib
-# *.dll
-# *.exe
-# *.a
-# *.o
-#
-# !include/opencv/
-# !include/godot-cpp/
-# !godot_project/
+./cache
+./venv
+
+.DS_Store
+Thumbs.db
+
+build/
+bin/
+dist/
+
+.godot/shader_cache/
+.godot/imported/
+export_presets.cfg
+*.import
+
+.sconsign.dblite
+
+*.so
+*.dylib
+*.dll
+*.exe
+*.a
+*.o
+
+!include/opencv/
+!include/godot-cpp/
+!godot_project/
