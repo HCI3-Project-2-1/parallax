@@ -8,8 +8,8 @@ build/
 bin/
 dist/
 
-.godot/shader_cache/
-.godot/imported/
+./godot_project/.godot/shader_cache/
+./godot_project/.godot/imported/
 export_presets.cfg
 *.import
 
@@ -22,6 +22,6 @@ export_presets.cfg
 *.a
 *.o
 
-!include/opencv/
-!include/godot-cpp/
-!godot_project/
+!./include/opencv/
+!./include/godot-cpp/
+!./godot_project/
