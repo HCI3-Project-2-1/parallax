@@ -1,3 +1,118 @@
-[gd_scene format=3 uid="uid://dh6yd28vv6xi7"]
+[gd_scene load_steps=23 format=3 uid="uid://3qx7v7tmvfnj"]
 
-[node name="main" type="Node3D"]
+[ext_resource type="Script" path="res://camera_3d.gd" id="1_41yob"]
+[ext_resource type="Texture2D" uid="uid://c4n3utb07tcu6" path="res://textures/coast_sand_rocks_02_diff_2k.png" id="1_54ptp"]
+[ext_resource type="Texture2D" uid="uid://ct7a8cwsr15ot" path="res://textures/coast_sand_rocks_02_nor_gl_2k.png" id="2_1e5sj"]
+[ext_resource type="Texture2D" uid="uid://3vv14eyn3yar" path="res://textures/coast_sand_rocks_02_rough_2k.png" id="3_15oky"]
+[ext_resource type="Texture2D" uid="uid://di1plhdkug7pc" path="res://textures/wooden_garage_door_diff_2k.png" id="5_sm5d2"]
+[ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://textures/wooden_garage_door_nor_gl_2k.png" id="6_cvl5s"]
+[ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://textures/wooden_garage_door_rough_2k.png" id="7_g1wh2"]
+[ext_resource type="Texture2D" uid="uid://bk6n5koyyqvl" path="res://textures/concrete_floor_worn_001_diff_1k.png" id="8_ppacf"]
+[ext_resource type="Texture2D" uid="uid://ccbty7j1em3lm" path="res://textures/concrete_floor_worn_001_nor_gl_1k.png" id="9_trn5h"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oxkxr"]
+size = Vector3(60, 2, 60)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8x5kl"]
+albedo_texture = ExtResource("1_54ptp")
+roughness_texture = ExtResource("3_15oky")
+normal_enabled = true
+normal_texture = ExtResource("2_1e5sj")
+uv1_scale = Vector3(30, 30, 300)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ex1am"]
+material = SubResource("StandardMaterial3D_8x5kl")
+size = Vector3(300, 2, 300)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8g8fw"]
+albedo_texture = ExtResource("5_sm5d2")
+roughness_texture = ExtResource("7_g1wh2")
+normal_enabled = true
+normal_texture = ExtResource("6_cvl5s")
+uv1_scale = Vector3(5, 40, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_k2uk5"]
+material = SubResource("StandardMaterial3D_8g8fw")
+size = Vector3(2, 20, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_05it5"]
+albedo_texture = ExtResource("8_ppacf")
+normal_enabled = true
+normal_texture = ExtResource("9_trn5h")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_m5b71"]
+material = SubResource("StandardMaterial3D_05it5")
+top_radius = 5.946
+bottom_radius = 2.0
+height = 9.426
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ytaxb"]
+albedo_texture = ExtResource("8_ppacf")
+
+[sub_resource type="SphereMesh" id="SphereMesh_r2pgf"]
+material = SubResource("StandardMaterial3D_ytaxb")
+radius = 0.4
+height = 1.8
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gvcx"]
+sky_top_color = Color(0.1078, 0.383717, 0.77, 1)
+sky_horizon_color = Color(0.676131, 0.670091, 0.44595, 1)
+ground_bottom_color = Color(0.54, 0.45432, 0.3564, 1)
+
+[sub_resource type="Sky" id="Sky_5140d"]
+sky_material = SubResource("ProceduralSkyMaterial_8gvcx")
+
+[sub_resource type="Environment" id="Environment_lyn0e"]
+background_mode = 2
+sky = SubResource("Sky_5140d")
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_of2vj"]
+
+[node name="Main" type="Node3D"]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_oxkxr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ex1am")
+
+[node name="DirectionalLight2D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.965926, 0.12941, -0.224144, 0, 0.866025, 0.5, 0.258819, -0.482963, 0.836516, -5, 9, 17)
+light_color = Color(1, 0.956177, 0.866958, 1)
+light_energy = 1.186
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 17)
+current = true
+script = ExtResource("1_41yob")
+
+[node name="box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("BoxMesh_k2uk5")
+
+[node name="box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2, -8)
+mesh = SubResource("BoxMesh_k2uk5")
+
+[node name="box3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, -4)
+mesh = SubResource("BoxMesh_k2uk5")
+
+[node name="cylidner" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 5, -20)
+mesh = SubResource("CylinderMesh_m5b71")
+
+[node name="person" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 13)
+mesh = SubResource("SphereMesh_r2pgf")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lyn0e")
+camera_attributes = SubResource("CameraAttributesPhysical_of2vj")

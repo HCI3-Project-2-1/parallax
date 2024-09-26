@@ -15,7 +15,7 @@ mp_drawing = mp.solutions.drawing_utils
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
 # Low-pass filter (Exponential Smoothing)
-alpha = 0.8  # Smoothing factor (adjustable for responsiveness/smoothness)
+alpha = 0.3  # Smoothing factor (adjustable for responsiveness/smoothness)
 smoothed_x, smoothed_y = None, None
 
 def smooth_coordinates(center_x, center_y, smoothed_x, smoothed_y, alpha):
