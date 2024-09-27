@@ -1,10 +1,11 @@
 # Godot C++ Extension Project
 
 ## Description
-This project is a **Godot extension** written in **C++** using **Godot's GDExtension API**. It includes logic for integrating OpenCV functionalities. The project uses **SCons** as the build system.
+This project is a **Godot extension** written in **C++** using **Godot's GDExtension C++ API**. Includes logic for integrating and leveraging OpenCV. We use **SCons** as the build system.
 
 ## Prerequisites
-- **Godot 4.x**
+- **Godot 4.3**
+- **OpenCV 4.10** 
 - **SCons** (build system)
 - **Python 3.x**
 - **C++ Compiler** (GCC, Clang, etc.)
@@ -22,11 +23,12 @@ cd parallax
 ### Generate C++ Godot bindings
 ```bash
 cd include/godot-cpp
-scons platform=<your_platform> generate_bindings=yes
-cd ..
+godot --dump-extension-api
+scons platform=<your_platform> generate_bindings=yes custom_api_file=extension_api.json
+cd ../..
 ```
 
-### Compile the extension to `godot_project/bin`
+### Compile the extension to `/godot_project/bin`
 ```bash
 scons platform=<your_platform>
 ```

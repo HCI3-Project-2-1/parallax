@@ -1,19 +1,19 @@
 # cmake arguments
-# CMAKE_BUILD_TYPE:         Compilation target (Debug or Release defaults to Debug)
+# CMAKE_BUILD_TYPE:			Compilation target (Debug or Release defaults to Debug)
 #
 # godot-cpp cmake arguments
-# GODOT_GDEXTENSION_DIR:    Path to the directory containing GDExtension interface header and API JSON file
-# GODOT_SYSTEM_HEADERS:     Mark the header files as SYSTEM. This may be useful to suppress warnings in projects including this one.
-# GODOT_WARNING_AS_ERROR:   Treat any warnings as errors
-# GODOT_USE_HOT_RELOAD:     Build with hot reload support. Defaults to YES for Debug-builds and NO for Release-builds.
-# GODOT_CUSTOM_API_FILE:    Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)
-# GODOT_PRECISION:          Floating-point precision level ("single", "double")
+# GODOT_GDEXTENSION_DIR:		Path to the directory containing GDExtension interface header and API JSON file
+# GODOT_CPP_SYSTEM_HEADERS		Mark the header files as SYSTEM. This may be useful to suppress warnings in projects including this one.
+# GODOT_CPP_WARNING_AS_ERROR	Treat any warnings as errors
+# GODOT_ENABLE_HOT_RELOAD       Build with hot reload support. Defaults to YES for Debug-builds and NO for Release-builds.
+# GODOT_CUSTOM_API_FILE:		Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)
+# FLOAT_PRECISION:				Floating-point precision level ("single", "double")
 #
 # Android cmake arguments
-# CMAKE_TOOLCHAIN_FILE:     The path to the android cmake toolchain ($ANDROID_NDK/build/cmake/android.toolchain.cmake)
-# ANDROID_NDK:              The path to the android ndk root folder
-# ANDROID_TOOLCHAIN_NAME:   The android toolchain (arm-linux-androideabi-4.9 or aarch64-linux-android-4.9 or x86-4.9 or x86_64-4.9)
-# ANDROID_PLATFORM:         The android platform version (android-23)
+# CMAKE_TOOLCHAIN_FILE:		The path to the android cmake toolchain ($ANDROID_NDK/build/cmake/android.toolchain.cmake)
+# ANDROID_NDK:				The path to the android ndk root folder
+# ANDROID_TOOLCHAIN_NAME:	The android toolchain (arm-linux-androideabi-4.9 or aarch64-linux-android-4.9 or x86-4.9 or x86_64-4.9)
+# ANDROID_PLATFORM:			The android platform version (android-23)
 # More info here: https://godot.readthedocs.io/en/latest/development/compiling/compiling_for_android.html
 #
 # Examples
@@ -35,31 +35,15 @@
 # Generate the buildfiles in a sub directory to not clutter the root directory with build files:
 # mkdir build && cd build && cmake -G "Unix Makefiles" .. && cmake --build .
 #
-# Ensure that you avoid exposing godot-cpp symbols - this might lead to hard to debug errors if you ever load multiple
-# plugins using difference godot-cpp versions. Use visibility hidden whenever possible:
-# set_target_properties(<all-my-plugin-related-targets> PROPERTIES CXX_VISIBILITY_PRESET hidden)
-#
 # Todo
 # Test build for Windows, Mac and mingw.
 
 cmake_minimum_required(VERSION 3.13)
 project(godot-cpp LANGUAGES CXX)
 
-option(GODOT_GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node. (ON|OFF)" ON)
-option(GODOT_SYSTEM_HEADERS "Expose headers as SYSTEM." ON)
-option(GODOT_WARNING_AS_ERROR "Treat warnings as errors" OFF)
-
-set( GODOT_SYMBOL_VISIBILITY "hidden" CACHE STRING "Symbols visibility on GNU platforms. Use 'auto' to apply the default value. (auto|visible|hidden)")
-set_property( CACHE GODOT_SYMBOL_VISIBILITY PROPERTY STRINGS "auto;visible;hidden" )
-
-# CXX_VISIBILITY_PRESET supported values are: default, hidden, protected, and internal
-# which is inline with the gcc -fvisibility=
-# https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html
-# To match the scons options we need to change the text to match the -fvisibility flag
-# it is probably worth another PR which changes both to use the flag options
-if( ${GODOT_SYMBOL_VISIBILITY} STREQUAL "auto" OR ${GODOT_SYMBOL_VISIBILITY} STREQUAL "visible" )
-    set( GODOT_SYMBOL_VISIBILITY "default" )
-endif ()
+option(GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node." ON)
+option(GODOT_CPP_SYSTEM_HEADERS "Expose headers as SYSTEM." ON)
+option(GODOT_CPP_WARNING_AS_ERROR "Treat warnings as errors" OFF)
 
 # Add path to modules
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" )
@@ -76,9 +60,9 @@ endif()
 
 # Hot reload is enabled by default in Debug-builds
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    option(GODOT_USE_HOT_RELOAD "Enable the extra accounting required to support hot reload. (ON|OFF)" ON)
+    option(GODOT_ENABLE_HOT_RELOAD "Build with hot reload support" ON)
 else()
-    option(GODOT_USE_HOT_RELOAD "Enable the extra accounting required to support hot reload. (ON|OFF)" OFF)
+    option(GODOT_ENABLE_HOT_RELOAD "Build with hot reload support" OFF)
 endif()
 
 if(NOT DEFINED BITS)
@@ -89,22 +73,20 @@ if(NOT DEFINED BITS)
 endif()
 
 # Input from user for GDExtension interface header and the API JSON file
-set(GODOT_GDEXTENSION_DIR "gdextension" CACHE PATH
-        "Path to a custom directory containing GDExtension interface header and API JSON file ( /path/to/gdextension_dir )" )
-set(GODOT_CUSTOM_API_FILE "" CACHE FILEPATH
-        "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`) ( /path/to/custom_api_file )")
+set(GODOT_GDEXTENSION_DIR "gdextension" CACHE STRING "")
+set(GODOT_CUSTOM_API_FILE "" CACHE STRING "")
 
 set(GODOT_GDEXTENSION_API_FILE "${GODOT_GDEXTENSION_DIR}/extension_api.json")
 if (NOT "${GODOT_CUSTOM_API_FILE}" STREQUAL "")  # User-defined override.
 	set(GODOT_GDEXTENSION_API_FILE "${GODOT_CUSTOM_API_FILE}")
 endif()
 
-set(GODOT_PRECISION "single" CACHE STRING "Set the floating-point precision level (single|double)")
-if ("${GODOT_PRECISION}" STREQUAL "double")
+set(FLOAT_PRECISION "single" CACHE STRING "")
+if ("${FLOAT_PRECISION}" STREQUAL "double")
 	add_definitions(-DREAL_T_IS_DOUBLE)
 endif()
 
-set( GODOT_COMPILE_FLAGS )
+set(GODOT_COMPILE_FLAGS )
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
@@ -129,7 +111,7 @@ endif()
 
 # Disable exception handling. Godot doesn't use exceptions anywhere, and this
 # saves around 20% of binary size and very significant build time (GH-80513).
-option(GODOT_DISABLE_EXCEPTIONS "Force disabling exception handling code (ON|OFF)" ON )
+option(GODOT_DISABLE_EXCEPTIONS ON "Force disabling exception handling code")
 if (GODOT_DISABLE_EXCEPTIONS)
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 		set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -D_HAS_EXCEPTIONS=0")
@@ -142,9 +124,13 @@ else()
 	endif()
 endif()
 
+if (GODOT_ENABLE_HOT_RELOAD)
+    set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -D HOT_RELOAD_ENABLED")
+endif()
+
 # Generate source from the bindings file
 find_package(Python3 3.4 REQUIRED) # pathlib should be present
-if(GODOT_GENERATE_TEMPLATE_GET_NODE)
+if(GENERATE_TEMPLATE_GET_NODE)
 	set(GENERATE_BINDING_PARAMETERS "True")
 else()
 	set(GENERATE_BINDING_PARAMETERS "False")
@@ -157,7 +143,7 @@ execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" "import binding_generator; 
 )
 
 add_custom_command(OUTPUT ${GENERATED_FILES_LIST}
-		COMMAND "${Python3_EXECUTABLE}" "-c" "import binding_generator; binding_generator.generate_bindings(\"${GODOT_GDEXTENSION_API_FILE}\", \"${GENERATE_BINDING_PARAMETERS}\", \"${BITS}\", \"${GODOT_PRECISION}\", \"${CMAKE_CURRENT_BINARY_DIR}\")"
+		COMMAND "${Python3_EXECUTABLE}" "-c" "import binding_generator; binding_generator.generate_bindings(\"${GODOT_GDEXTENSION_API_FILE}\", \"${GENERATE_BINDING_PARAMETERS}\", \"${BITS}\", \"${FLOAT_PRECISION}\", \"${CMAKE_CURRENT_BINARY_DIR}\")"
 		VERBATIM
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		MAIN_DEPENDENCY ${GODOT_GDEXTENSION_API_FILE}
@@ -184,11 +170,6 @@ target_compile_features(${PROJECT_NAME}
 		cxx_std_17
 )
 
-if(GODOT_USE_HOT_RELOAD)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC HOT_RELOAD_ENABLED)
-	target_compile_options(${PROJECT_NAME} PUBLIC $<${compiler_is_gnu}:-fno-gnu-unique>)
-endif()
-
 target_compile_definitions(${PROJECT_NAME} PUBLIC
 	$<$<CONFIG:Debug>:
 		DEBUG_ENABLED
@@ -208,12 +189,12 @@ target_link_options(${PROJECT_NAME} PRIVATE
 )
 
 # Optionally mark headers as SYSTEM
-set(GODOT_SYSTEM_HEADERS_ATTRIBUTE "")
-if (GODOT_SYSTEM_HEADERS)
-	set(GODOT_SYSTEM_HEADERS_ATTRIBUTE SYSTEM)
+set(GODOT_CPP_SYSTEM_HEADERS_ATTRIBUTE "")
+if (GODOT_CPP_SYSTEM_HEADERS)
+	set(GODOT_CPP_SYSTEM_HEADERS_ATTRIBUTE SYSTEM)
 endif ()
 
-target_include_directories(${PROJECT_NAME} ${GODOT_SYSTEM_HEADERS_ATTRIBUTE} PUBLIC
+target_include_directories(${PROJECT_NAME} ${GODOT_CPP_SYSTEM_HEADERS_ATTRIBUTE} PUBLIC
 	include
 	${CMAKE_CURRENT_BINARY_DIR}/gen/include
 	${GODOT_GDEXTENSION_DIR}
@@ -240,7 +221,6 @@ set_target_properties(${PROJECT_NAME}
 	PROPERTIES
 		CXX_EXTENSIONS OFF
 		POSITION_INDEPENDENT_CODE ON
-		CXX_VISIBILITY_PRESET ${GODOT_SYMBOL_VISIBILITY}
 		ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin"
 		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin"
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin"

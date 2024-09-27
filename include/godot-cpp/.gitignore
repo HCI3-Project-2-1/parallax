@@ -195,7 +195,3 @@ compile_commands.json
 # Python development
 .venv
 venv
-
-# Clion Configuration
-.idea/
-cmake-build-*
