@@ -1,0 +1,8 @@
+# requirements.txt
+opencv-python
+mediapipe
+
+****************************************************
+//Install dependencies using:
+pip install -r requirements.txt
+****************************************************
