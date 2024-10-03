@@ -33,7 +33,7 @@ func _process(delta):
 	rotation_degrees.x = lerp_angle(rotation_degrees.x, rotation_x, smoothing)  # Smooth pitch rotation
 	rotation_degrees.y = lerp_angle(rotation_degrees.y, rotation_y, smoothing)  # Smooth yaw rotation
 	
-	print("Camera rotation: ", rotation_degrees)  # Debug print
+	# print("Camera rotation: ", rotation_degrees)  # Debug print
 
 func _exit_tree():
 	udp_server.stop()
