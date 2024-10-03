@@ -21,8 +21,8 @@ class PerformanceMetrics:
         """Updates frame count and returns current FPS."""
         self.frame_count += 1
         elapsed_time = time.time() - self.start_time
-        if elapsed_time == 0:  # Avoid division by zero
-            return 0
+        if elapsed_time <= 0.001:  # Avoid division by zero or near-zero elapsed time
+            return 0.0
         fps = self.frame_count / elapsed_time
         return fps
 

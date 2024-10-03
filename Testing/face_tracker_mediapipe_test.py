@@ -5,6 +5,7 @@ import time  # For timestamp
 import psutil  # For CPU and memory usage tracking
 from parallax.Testing.performance_metrics import PerformanceMetrics  # Import your performance metrics class
 
+
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
 UDP_PORT = 12345
@@ -14,6 +15,7 @@ ALPHA = 0.3  # Smoothing factor for low-pass filter
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
 
+
 def smooth_coordinates(new_x, new_y, prev_x, prev_y, alpha):
     """Smooth the coordinates using exponential smoothing."""
     if prev_x is None or prev_y is None:
@@ -22,11 +24,58 @@ def smooth_coordinates(new_x, new_y, prev_x, prev_y, alpha):
     smoothed_y = alpha * new_y + (1 - alpha) * prev_y
     return smoothed_x, smoothed_y
 
+
 def send_coordinates(sock, x, y):
     """Send normalized coordinates to Godot via UDP, including a timestamp."""
     timestamp = time.time()  # Add timestamp for latency calculation
     message = f"{timestamp},{x:.4f},{y:.4f}"  # Message includes timestamp
     sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
+
+
+def get_system_info():
+    """
+    Retrieves current system specifications.
+
+    :return: Dictionary containing system information (CPU speed, CPU count, Total memory)
+    """
+    cpu_speed = psutil.cpu_freq().max  # Max CPU speed in MHz
+    system_info = {
+        'CPU Speed': f"{cpu_speed / 1000:.2f} GHz",  # Convert MHz to GHz
+        'CPU Count': psutil.cpu_count(logical=True),
+        'Total Memory': f"{psutil.virtual_memory().total / (1024 ** 3):.2f} GB"  # Bytes to GB
+    }
+    return system_info
+
+
+def write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps, average_cpu,
+                                      average_memory, filename='performance_results.txt'):
+    """
+    Writes the performance results to a text file.
+
+    :param system_info: Dictionary containing system information
+    :param detection_rate: Detection rate of the face tracker
+    :param average_error: Average error of the face tracker
+    :param jitter_x: Jitter in the x-coordinate
+    :param jitter_y: Jitter in the y-coordinate
+    :param fps: Frames per second
+    :param average_cpu: Average CPU usage
+    :param average_memory: Average memory usage
+    :param filename: Name of the file to write the results into
+    """
+    with open(filename, 'w') as file:
+        file.write("System Information:\n")
+        for key, value in system_info.items():
+            file.write(f"{key}: {value}\n")
+        file.write("\nPlease provide your username\n")
+        file.write("\nPerformance Results For MediaPipe:\n")
+        file.write(f"Detection Rate: {detection_rate:.2f}%\n")
+        file.write(f"Average Localization Error: {average_error:.2f}\n")
+        file.write(f"Jitter X: {jitter_x:.2f}\n")
+        file.write(f"Jitter Y: {jitter_y:.2f}\n")
+        file.write(f"Average FPS: {fps:.2f}\n")
+        file.write(f"Average CPU Usage: {average_cpu:.2f}%\n")
+        file.write(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB\n")  # Convert bytes to MB
+
 
 def main():
     """Main function to run the face tracking."""
@@ -40,7 +89,7 @@ def main():
     performance = PerformanceMetrics()
 
     # Start capturing video (try from file, fallback to webcam if not available)
-    cap = cv2.VideoCapture('sample.mp4')  # Replace '0' with your video path if using a video file
+    cap = cv2.VideoCapture(0)  # Replace '0' with your video path if using a video file
     if not cap.isOpened():
         print("Video file not found, trying webcam...")
         cap = cv2.VideoCapture(0)  # Try the webcam if video is not found
@@ -49,13 +98,14 @@ def main():
         print("Error: Could not open video or webcam")
         return
 
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap.get(cv2.CAP_PROP_FRAME_COUNT) > 0 else 0  # Total number of frames in the video
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap.get(
+        cv2.CAP_PROP_FRAME_COUNT) > 0 else 0  # Total number of frames in the video
 
     with mp_face_mesh.FaceMesh(
-        max_num_faces=1,
-        refine_landmarks=True,  # Includes iris landmarks
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5
+            max_num_faces=1,
+            refine_landmarks=True,  # Includes iris landmarks
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5
     ) as face_mesh:
         try:
             while True:
@@ -135,7 +185,7 @@ def main():
             cv2.destroyAllWindows()
             sock.close()
 
-            # Calculate and print detection rate, average localization error, jitter, CPU and memory usage
+            # Calculate performance metrics
             detection_rate = performance.calculate_detection_rate()
             average_error = performance.calculate_average_error()
             jitter_x, jitter_y = performance.calculate_jitter()
@@ -149,6 +199,14 @@ def main():
             print(f"Average FPS: {fps:.2f}")
             print(f"Average CPU Usage: {average_cpu:.2f}%")
             print(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB")  # Convert bytes to MB
+
+            # Get system information
+            system_info = get_system_info()
+
+            # Write performance results to file
+            write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps,
+                                              average_cpu, average_memory)
+
 
 if __name__ == "__main__":
     main()
