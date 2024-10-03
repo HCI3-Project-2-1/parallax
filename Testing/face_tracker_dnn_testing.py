@@ -7,7 +7,7 @@ from performance_metrics import PerformanceMetrics  # Import your PerformanceMet
 
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
-UDP_PORT = 12345
+UDP_PORT = 13456
 ALPHA = 0.3  # Smoothing factor for low-pass filter
 CONFIDENCE_THRESHOLD = 0.5  # Minimum confidence for detections
 
@@ -48,7 +48,7 @@ def get_system_info():
 
 
 def write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps, average_cpu,
-                                      average_memory, filename='performance_results.txt'):
+                                      average_memory, filename='performance_results_dnn.txt'):
     """
     Writes the performance results to a text file.
     """

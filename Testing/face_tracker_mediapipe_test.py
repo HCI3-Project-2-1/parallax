@@ -8,7 +8,7 @@ from parallax.Testing.performance_metrics import PerformanceMetrics  # Import yo
 
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
-UDP_PORT = 12345
+UDP_PORT = 13456  # Changed to a valid port number
 ALPHA = 0.3  # Smoothing factor for low-pass filter
 
 # Initialize MediaPipe Face Mesh for more detailed facial landmarks
@@ -48,7 +48,7 @@ def get_system_info():
 
 
 def write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps, average_cpu,
-                                      average_memory, filename='performance_results.txt'):
+                                      average_memory, filename='performance_results_MediaPipe.txt'):
     """
     Writes the performance results to a text file.
 
@@ -101,6 +101,7 @@ def main():
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap.get(
         cv2.CAP_PROP_FRAME_COUNT) > 0 else 0  # Total number of frames in the video
 
+    fps = 0  # Initialize fps with a default value
     with mp_face_mesh.FaceMesh(
             max_num_faces=1,
             refine_landmarks=True,  # Includes iris landmarks
@@ -166,7 +167,7 @@ def main():
                 performance.update_detection(face_detected)
                 performance.update_cpu_usage()
                 performance.update_memory_usage()
-                fps = performance.update_fps()
+                fps = performance.update_fps()  # Ensure FPS is updated here
 
                 # Display the frame with FPS
                 cv2.putText(frame, f'FPS: {fps:.2f}', (10, 30),
@@ -196,7 +197,7 @@ def main():
             print(f"Average Localization Error: {average_error:.2f}")
             print(f"Jitter X: {jitter_x:.2f}")
             print(f"Jitter Y: {jitter_y:.2f}")
-            print(f"Average FPS: {fps:.2f}")
+            print(f"Average FPS: {fps:.2f}")  # fps should now always have a value
             print(f"Average CPU Usage: {average_cpu:.2f}%")
             print(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB")  # Convert bytes to MB
 
