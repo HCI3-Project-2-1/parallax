@@ -8,7 +8,7 @@ import time
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
 UDP_PORT = 12345
-ALPHA = 0.3  # Smoothing factor for low-pass filter
+ALPHA = 0.5  # Smoothing factor for low-pass filter
 
 # Initialize MediaPipe Face Mesh for more detailed facial landmarks
 mp_face_mesh = mp.solutions.face_mesh
