@@ -13,7 +13,7 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_oxkxr"]
 size = Vector3(60, 2, 60)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8x5kl"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dddp5"]
 albedo_texture = ExtResource("1_54ptp")
 roughness_texture = ExtResource("3_15oky")
 normal_enabled = true
@@ -21,10 +21,10 @@ normal_texture = ExtResource("2_1e5sj")
 uv1_scale = Vector3(30, 30, 300)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ex1am"]
-material = SubResource("StandardMaterial3D_8x5kl")
+material = SubResource("StandardMaterial3D_dddp5")
 size = Vector3(300, 2, 300)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8g8fw"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rcvxi"]
 albedo_texture = ExtResource("5_sm5d2")
 roughness_texture = ExtResource("7_g1wh2")
 normal_enabled = true
@@ -32,7 +32,7 @@ normal_texture = ExtResource("6_cvl5s")
 uv1_scale = Vector3(5, 40, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_k2uk5"]
-material = SubResource("StandardMaterial3D_8g8fw")
+material = SubResource("StandardMaterial3D_rcvxi")
 size = Vector3(2, 20, 4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_05it5"]
@@ -70,10 +70,6 @@ sky = SubResource("Sky_5140d")
 
 [node name="Main" type="Node3D"]
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
-
 [node name="Ground" type="StaticBody3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
@@ -89,7 +85,7 @@ light_energy = 1.186
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 17)
+transform = Transform3D(1, 0, 0, 0, 0.985342, 0.170588, 0, -0.170588, 0.985342, 0, 23.438, 23.3879)
 current = true
 script = ExtResource("1_41yob")
 
@@ -110,7 +106,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 5, -20)
 mesh = SubResource("CylinderMesh_m5b71")
 
 [node name="person" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 13)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 19.5145)
 mesh = SubResource("SphereMesh_r2pgf")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
