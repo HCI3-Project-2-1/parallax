@@ -101,16 +101,18 @@ def main():
                 else:
                     # No face detected; you might want to send a default value or handle accordingly
                     pass
-
-                # Display the frame
-                cv2.imshow('Face Tracking', frame)
-
+                # Mirror the frame
+                display_frame = cv2.flip(frame, 1)
+                
                 # Performance measurement
                 frame_count += 1
                 elapsed_time = time.time() - start_time
                 fps = frame_count / elapsed_time
-                cv2.putText(frame, f'FPS: {fps:.2f}', (10, 30),
+                cv2.putText(display_frame, f'FPS: {fps:.2f}', (10, 30),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+                cv2.imshow('Face Tracking', display_frame)
+
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
