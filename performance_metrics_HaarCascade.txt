@@ -1,0 +1,9 @@
+User Name: ramanyousefi
+Processor: 3228.00GHz
+Memory: 16384MB RAM
+FPS: 13.75
+Detection Rate: 67.61%
+Average Localization Error: 199.10
+Jitter - X: 251.86, Y: 204.08
+Average CPU Usage: 16.78%
+Average Memory Usage: 480.69 MB
