@@ -1,0 +1,15 @@
+System Information:
+CPU Speed: 3.23 GHz
+CPU Count: 10
+Total Memory: 16.00 GB
+
+Please provide your username: ramanyousefi
+
+Performance Results For MediaPipe:
+Detection Rate: 99.91%
+Average Localization Error: 0.00
+Jitter X: 61.16
+Jitter Y: 29.27
+Average FPS: 25.97
+Average CPU Usage: 7.09%
+Average Memory Usage: 451.34 MB
