@@ -4,19 +4,17 @@ var udp_server = UDPServer.new()
 var port = 12345
 
 var face_position = Vector2.ZERO
-var smoothing = 0.9
+var smoothing = 0.5
 var sensitivity = 5.0  # Adjust this to control how much the camera moves
 
 # Fixed rotation target (the point the camera should always look at)
 var fixed_look_at = Vector3(0, 2, 0)  # Adjust this to set the fixed look-at point
 
 # Speed of the camera movement
-var move_speed = 5.0  # Speed at which the camera moves
+var move_speed = 8.0  # Speed at which the camera moves
 
-# Limit for minimum Y position (to prevent negative Y values)
+# Limit for minimum and maximum y position (to constrain vertical movement)
 var min_y_position = -20.0  # Set a small positive value to prevent going below ground level
-
-# Optional maximum Y position (if needed)
 var max_y_position = 20.0  # You can adjust the upper limit if necessary
 
 # Limit for minimum and maximum X position (to constrain horizontal movement)
@@ -55,10 +53,6 @@ func _process(delta):
 	# Clamp the X and Y positions to their respective limits
 	global_position.x = clamp(global_position.x, min_x_position, max_x_position)
 	global_position.y = clamp(global_position.y, min_y_position, max_y_position)
-
-	# Ensure the camera remains on the Z-axis by not modifying the Z position
-	# If you need to set a specific Z position, uncomment the following line:
-	# global_position.z = desired_z_position
 
 	# Make the camera always look at the fixed point (0, 0, 0)
 	look_at(fixed_look_at)

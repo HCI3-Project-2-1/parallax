@@ -1,5 +1,3 @@
-# face_tracker.py
-
 import cv2
 import mediapipe as mp
 import socket
