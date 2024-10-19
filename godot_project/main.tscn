@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://3qx7v7tmvfnj"]
+[gd_scene load_steps=23 format=3 uid="uid://3qx7v7tmvfnj"]
 
 [ext_resource type="Script" path="res://camera_3d.gd" id="1_41yob"]
 [ext_resource type="Texture2D" uid="uid://c4n3utb07tcu6" path="res://textures/coast_sand_rocks_02_diff_2k.png" id="1_54ptp"]
@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://textures/wooden_garage_door_rough_2k.png" id="7_g1wh2"]
 [ext_resource type="Texture2D" uid="uid://bk6n5koyyqvl" path="res://textures/concrete_floor_worn_001_diff_1k.png" id="8_ppacf"]
 [ext_resource type="Texture2D" uid="uid://ccbty7j1em3lm" path="res://textures/concrete_floor_worn_001_nor_gl_1k.png" id="9_trn5h"]
-[ext_resource type="Script" path="res://udp_listener.gd" id="10_tbkp7"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_oxkxr"]
 size = Vector3(60, 2, 60)
@@ -113,6 +112,3 @@ mesh = SubResource("SphereMesh_r2pgf")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_lyn0e")
 camera_attributes = SubResource("CameraAttributesPhysical_of2vj")
-
-[node name="Node" type="Node" parent="."]
-script = ExtResource("10_tbkp7")

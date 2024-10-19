@@ -4,7 +4,7 @@ var udp_server = UDPServer.new()
 var port = 12345
 
 var face_position = Vector2.ZERO
-var smoothing = 0.5
+var smoothing = 1
 var sensitivity = 5.0  # Adjust this to control how much the camera moves
 
 # Fixed rotation target (the point the camera should always look at)
@@ -55,7 +55,7 @@ func _process(delta):
 	global_position.y = clamp(global_position.y, min_y_position, max_y_position)
 
 	# Make the camera always look at the fixed point (0, 0, 0)
-	look_at(fixed_look_at)
+	#look_at(fixed_look_at)
 
 	# Handle movement input (WASD)
 	_handle_movement(delta)

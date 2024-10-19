@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Parallax"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scene2.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://icon.png"
 

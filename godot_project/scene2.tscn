@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://cgaabc0wua78b"]
+[gd_scene load_steps=31 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Texture2D" uid="uid://c4n3utb07tcu6" path="res://textures/coast_sand_rocks_02_diff_2k.png" id="1_xdxha"]
 [ext_resource type="Texture2D" uid="uid://ct7a8cwsr15ot" path="res://textures/coast_sand_rocks_02_nor_gl_2k.png" id="2_07mwx"]
@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://textures/wooden_garage_door_nor_gl_2k.png" id="6_skn0c"]
 [ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://textures/wooden_garage_door_rough_2k.png" id="7_lenho"]
 [ext_resource type="PackedScene" uid="uid://do6yslistk8je" path="res://assests/UM_Logo.gltf" id="9_de757"]
+[ext_resource type="Script" path="res://control.gd" id="9_f26jl"]
+[ext_resource type="Shader" path="res://webcam.gdshader" id="10_fuq1o"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vidia"]
 sky_top_color = Color(0.353597, 0.451107, 0.55, 1)
@@ -38,6 +40,13 @@ uv1_scale = Vector3(30, 30, 300)
 [sub_resource type="BoxMesh" id="BoxMesh_7fop2"]
 material = SubResource("StandardMaterial3D_rdqm6")
 size = Vector3(300, 2, 300)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wtoqj"]
+albedo_color = Color(0.127821, 0.173184, 1, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_xc034"]
+material = SubResource("StandardMaterial3D_wtoqj")
+size = Vector3(1, 1.5, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8g8fw"]
 albedo_texture = ExtResource("5_ugoku")
@@ -74,6 +83,22 @@ size = Vector3(2, 10, 2)
 material = SubResource("StandardMaterial3D_8g8fw")
 size = Vector3(2, 25, 2)
 
+[sub_resource type="CameraTexture" id="CameraTexture_j7dee"]
+camera_feed_id = 1
+which_feed = 1
+
+[sub_resource type="CameraTexture" id="CameraTexture_hx6d8"]
+camera_feed_id = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nc66c"]
+shader = ExtResource("10_fuq1o")
+shader_parameter/camera_y = SubResource("CameraTexture_hx6d8")
+shader_parameter/camera_CbCr = SubResource("CameraTexture_j7dee")
+
+[sub_resource type="CameraTexture" id="CameraTexture_kmqkp"]
+camera_feed_id = 1
+which_feed = 1
+
 [node name="Node3D" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -96,11 +121,15 @@ light_color = Color(1, 0.956177, 0.866958, 1)
 light_energy = 1.186
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Main" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 current = true
 fov = 100.0
 script = ExtResource("4_rcw5v")
+
+[node name="Node3D" type="MeshInstance3D" parent="Main"]
+transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("PrismMesh_xc034")
 
 [node name="Node3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4, 0)
@@ -478,3 +507,65 @@ skeleton = NodePath("../../../..")
 
 [node name="UM_Logo" parent="." instance=ExtResource("9_de757")]
 transform = Transform3D(0.5, 0, 0, 0, -8.74228e-08, -0.5, 0, 2, -2.18557e-08, 0, -13, 1)
+
+[node name="Secondary" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, -6, 27)
+fov = 80.9
+
+[node name="Node3D" type="MeshInstance3D" parent="Secondary"]
+transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("PrismMesh_xc034")
+
+[node name="Control" type="Control" parent="." node_paths=PackedStringArray("Main", "Secondary")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("9_f26jl")
+Main = NodePath("../Main")
+Secondary = NodePath("../Secondary")
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 77.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 15
+text = "Toggle view"
+
+[node name="Button2" type="Button" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 82.0
+offset_right = 77.0
+offset_bottom = 82.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 15
+text = "Toggle Webcam"
+
+[node name="Webcam" type="TextureRect" parent="Control"]
+material = SubResource("ShaderMaterial_nc66c")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 23.925
+anchor_top = 13.45
+anchor_right = 28.725
+anchor_bottom = 16.15
+offset_right = 1728.0
+offset_bottom = 972.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(0.1, 0.1)
+texture = SubResource("CameraTexture_kmqkp")
+flip_h = true
+metadata/_edit_use_anchors_ = true
