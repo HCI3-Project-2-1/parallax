@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://c73evq08u0jcb"]
+[gd_scene load_steps=35 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Texture2D" uid="uid://c4n3utb07tcu6" path="res://textures/coast_sand_rocks_02_diff_2k.png" id="1_xdxha"]
 [ext_resource type="Texture2D" uid="uid://ct7a8cwsr15ot" path="res://textures/coast_sand_rocks_02_nor_gl_2k.png" id="2_07mwx"]
@@ -84,6 +84,12 @@ size = Vector3(2, 10, 2)
 material = SubResource("StandardMaterial3D_8g8fw")
 size = Vector3(2, 25, 2)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3ox1s"]
+albedo_color = Color(1, 0, 0.113404, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_0152m"]
+material = SubResource("StandardMaterial3D_3ox1s")
+
 [sub_resource type="Theme" id="Theme_qb6cg"]
 
 [sub_resource type="CameraTexture" id="CameraTexture_8laje"]
@@ -103,7 +109,7 @@ camera_feed_id = 1
 which_feed = 1
 
 [node name="Node3D" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_e6xxm")
@@ -116,7 +122,7 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 
 shape = SubResource("BoxShape3D_bg0ei")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, -0.707107, 0.707106)
 mesh = SubResource("BoxMesh_7fop2")
 
 [node name="DirectionalLight2D" type="DirectionalLight3D" parent="."]
@@ -134,7 +140,7 @@ transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-0
 mesh = SubResource("PrismMesh_xc034")
 
 [node name="Main" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
 current = true
 script = ExtResource("4_rcw5v")
 
@@ -515,6 +521,10 @@ skeleton = NodePath("../../../..")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -3, 0)
 mesh = SubResource("BoxMesh_3rm1h")
 skeleton = NodePath("../../../..")
+
+[node name="body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -8, 8)
+mesh = SubResource("CapsuleMesh_0152m")
 
 [node name="UM_Logo" parent="." instance=ExtResource("9_de757")]
 transform = Transform3D(0.5, 0, 0, 0, -8.74228e-08, -0.5, 0, 2, -2.18557e-08, 0, -13, 1)
