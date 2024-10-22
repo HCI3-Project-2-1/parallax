@@ -1,6 +1,6 @@
 res://main.tscn
-res://scene2.tscn
-res://scene2_camera_3d.gd
-res://control.gd
-res://secondary.gd
 res://webcam.gdshader
+res://scene2.tscn
+res://Scene3/scene3.tscn
+res://Scene3/scene3.gd
+res://scene2_camera_3d.gd

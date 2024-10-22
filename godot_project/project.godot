@@ -15,9 +15,19 @@ run/main_scene="res://scene2.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://icon.png"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/simple_tool_button/plugin.cfg")
+
 [filesystem]
 
 import/blender/enabled=false
+
+[importer_defaults]
+
+animation_library={
+"animation/fps": 30.0
+}
 
 [input]
 
@@ -45,6 +55,10 @@ move_right={
 [navigation]
 
 3d/name="Parallax"
+
+[physics]
+
+3d/run_on_separate_thread=true
 
 [rendering]
 

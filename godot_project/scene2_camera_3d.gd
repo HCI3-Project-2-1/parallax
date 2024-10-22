@@ -3,23 +3,28 @@ extends Camera3D
 var udp_server = UDPServer.new()
 var port = 12345
 
-var face_position = Vector2.ZERO
-var smoothing = 1
-var sensitivity = 5.0  # Adjust this to control how much the camera moves
-
+var face_position = Vector3.ZERO  # Changed to Vector3
+var smoothing = 1  
+var sensitivity = 6.0  # Adjust this to control how much the camera moves
+var z_sensitivity = 4.0
 # Fixed rotation target (the point the camera should always look at)
 var fixed_look_at = Vector3(0, 2, 0)  # Adjust this to set the fixed look-at point
 
-# Speed of the camera movement
-var move_speed = 8.0  # Speed at which the camera moves
 
 # Limit for minimum and maximum y position (to constrain vertical movement)
-var min_y_position = -20.0  # Set a small positive value to prevent going below ground level
-var max_y_position = 20.0  # You can adjust the upper limit if necessary
+var min_y_position = -20000.0  # Set a small positive value to prevent going below ground level
+var max_y_position = 20000.0  # You can adjust the upper limit if necessary
 
 # Limit for minimum and maximum X position (to constrain horizontal movement)
-var min_x_position = -20.0  # Lower bound for X position
-var max_x_position = 20.0   # Upper bound for X position
+var min_x_position = -20000.0  # Lower bound for X position
+var max_x_position = 20000.0   # Upper bound for X position
+# Limit for minimum and maximum X position (to constrain horizontal movement)
+var min_z_position = -20000.0  # Lower bound for X position
+var max_z_position = 20000.0   # Upper bound for X position
+#Offset the z data
+var z_offset = 3
+# Change fixed angle or dynamic angle
+@export var look_at_fixed = true
 
 func _ready():
 	var err = udp_server.listen(port)
@@ -35,48 +40,31 @@ func _process(delta):
 		var peer = udp_server.take_connection()
 		var packet = peer.get_packet()
 		var data = packet.get_string_from_utf8().split(",")
-		if data.size() == 2:
-			#print("Received data: ", data)  # Debug print
-			var new_position = Vector2(-float(data[0]), float(data[1]))
+		if data.size() == 3:
+			print("Received data: ", data)  # Debug print
+			# Map the axes according to the new requirements
+			var new_position = Vector3(-float(data[0]), float(data[1]), float(data[2]) + z_offset)
 			face_position = face_position.lerp(new_position, smoothing)
 
-	# Adjust position in X and Y axes based on UDP data
-	var target_position_x = float(face_position.x * sensitivity)
-	
-	# Prevent Y from going below ground, cast to float to avoid type issues
-	var target_position_y = float(max(face_position.y * sensitivity, min_y_position))
+	# Adjust position in X, Y, and Z axes based on UDP data
+	var target_position = Vector3(
+		float(face_position.x * sensitivity),  # X axis for right movement
+		float(face_position.y * sensitivity),  # Y axis from data
+		max(float(face_position.z * z_sensitivity), min_y_position)  # Z axis for height
+	)
 
-	# Keep Z position constant to ensure the camera stays on the Z-axis
-	global_position.x = lerp(float(global_position.x), target_position_x, smoothing)
-	global_position.y = lerp(float(global_position.y), target_position_y, smoothing)
+	# Lerp the global position
+	global_position = global_position.lerp(target_position, smoothing)
 
-	# Clamp the X and Y positions to their respective limits
+	# Clamp the X, Y, and Z positions to their respective limits
 	global_position.x = clamp(global_position.x, min_x_position, max_x_position)
 	global_position.y = clamp(global_position.y, min_y_position, max_y_position)
+	global_position.z = clamp(global_position.z, min_z_position, max_z_position)
 
-	# Make the camera always look at the fixed point (0, 0, 0)
-	#look_at(fixed_look_at)
+	if look_at_fixed:
+		look_at(Vector3.ZERO)
 
-	# Handle movement input (WASD)
-	_handle_movement(delta)
-
-	#print("Camera position: ", global_position)  # Debug print
+	print("Camera position: ", global_position)  # Debug print
 
 func _exit_tree():
 	udp_server.stop()
-
-# Function to handle movement based on WASD keys
-func _handle_movement(delta):
-	var move_direction = Vector3()
-
-	# Move forward (W) and backward (S)
-	if Input.is_action_pressed("move_forward"):
-		move_direction.z -= 1
-	if Input.is_action_pressed("move_backward"):
-		move_direction.z += 1
-
-	# Normalize direction and apply speed
-	move_direction = move_direction.normalized() * move_speed * delta
-	
-	# Apply movement in the local space (use translation instead of global_position)
-	translate(move_direction)
