@@ -1,0 +1,14 @@
+[configuration]
+
+entry_symbol = "camera_extension_library_init"
+compatibility_minimum = "4.3"
+reloadable = true
+
+[libraries]
+
+macos.debug = "res://bin/lib_camera_extension.macos.template_debug.framework"
+macos.release = "res://bin/lib_camera_extension.macos.template_release.framework"
+windows.debug.x86_64 = "res://bin/lib_camera_extension.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://bin/lib_camera_extension.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://bin/lib_camera_extension.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://bin/lib_camera_extension.linux.template_release.x86_64.so"

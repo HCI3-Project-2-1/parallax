@@ -5,7 +5,6 @@
 Thumbs.db
 
 build/
-bin/
 dist/
 
 ./godot_project/.godot/shader_cache/
