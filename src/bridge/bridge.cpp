@@ -3,7 +3,8 @@
 #include <optional>
 #include <queue>
 
-template <typename T> class ThreadSafeQueue {
+// thread safe queue
+template <typename T> class Bridge {
 public:
   void push(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -22,7 +23,7 @@ public:
     return value;
   }
 
-  bool empty() const {
+  bool is_empty() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return queue_.empty();
   }

@@ -4,16 +4,19 @@
 env = SConscript("include/godot-cpp/SConstruct")
 
 # append the source directory to the include path
-env.Append(CPPPATH=["src/", "include/godot-cpp/include"])
+env.Append(CPPPATH=["src/", "include/godot-cpp/include/", "/usr/include/opencv4"])
 
-if env["platform"] == "linux":
-    env.ParseConfig("pkg-config --cflags --libs opencv4")
+env.Append(LIBPATH=["/usr/lib/"])
+env.Append(LIBS=["opencv_core", "opencv_videoio", "dlib"])
+
+# we need exceptions for dlib model loading
+env.Append(CCFLAGS=["-fexceptions"])
 
 # lib binary output dir
 godot_project_bin = "godot_project/bin"
-library_name = "lib_opencv_camera_gdextension"
+library_name = "lib_camera_extension"
 
-sources = Glob("src/opencv_camera/*.cpp") + Glob("src/vision/*.cpp") + ["src/register_types.cpp"]
+sources = Glob("src/camera_extension/*.cpp") + ["src/register_types.cpp"]
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
