@@ -9,6 +9,10 @@ import numpy as np
 
 class FaceTracker:
     def __init__(self):
+        print('-' * 15 + '*' * 15 + '-' * 15)
+        print('-' * 14 + 'Initializing FaceTracker' + '-' * 15)
+        print('-' * 15 + '*' * 15 + '-' * 15)
+
         # Initialize constants
         self.UDP_IP = "127.0.0.1"
         self.UDP_PORT = 12345
@@ -19,6 +23,28 @@ class FaceTracker:
         # Initialize MediaPipe Face Mesh
         self.mp_face_mesh = mp.solutions.face_mesh
         self.mp_drawing = mp.solutions.drawing_utils
+
+        # Initialize Kalman Filter for x, y, z
+        self.kalman_x = cv2.KalmanFilter(2, 1)
+        self.kalman_x.measurementMatrix = np.array([[1, 0]], np.float32)
+        self.kalman_x.transitionMatrix = np.array([[1, 1],
+                                                   [0, 1]], np.float32)
+        self.kalman_x.processNoiseCov = np.array([[1, 0],
+                                                 [0, 1]], np.float32) * 0.03
+
+        self.kalman_y = cv2.KalmanFilter(2, 1)
+        self.kalman_y.measurementMatrix = np.array([[1, 0]], np.float32)
+        self.kalman_y.transitionMatrix = np.array([[1, 1],
+                                                   [0, 1]], np.float32)
+        self.kalman_y.processNoiseCov = np.array([[1, 0],
+                                                 [0, 1]], np.float32) * 0.03
+
+        self.kalman_z = cv2.KalmanFilter(2, 1)
+        self.kalman_z.measurementMatrix = np.array([[1, 0]], np.float32)
+        self.kalman_z.transitionMatrix = np.array([[1, 1],
+                                                   [0, 1]], np.float32)
+        self.kalman_z.processNoiseCov = np.array([[1, 0],
+                                                 [0, 1]], np.float32) * 0.03
 
         # Initialize global variables
         self.smoothed_x, self.smoothed_y, self.smoothed_z = None, None, None
@@ -31,14 +57,20 @@ class FaceTracker:
         self.frame_processed = threading.Event()
         self.coordinates = (None, None)
 
-    def smooth_coordinates(self, new_x, new_y, new_z, prev_x, prev_y, prev_z):
-        """Smooth the coordinates using exponential smoothing."""
-        if prev_x is None or prev_y is None or prev_z is None:
-            return new_x, new_y, new_z
-        smoothed_x = self.ALPHA * new_x + (1 - self.ALPHA) * prev_x
-        smoothed_y = self.ALPHA * new_y + (1 - self.ALPHA) * prev_y
-        smoothed_z = self.ALPHA * new_z + (1 - self.ALPHA) * prev_z
-        return smoothed_x, smoothed_y, smoothed_z
+        # Initialize filtered coordinates
+        self.filtered_x = None
+        self.filtered_y = None
+        self.filtered_z = None
+    
+    # Note: replaced with Kalman Filter
+    # def smooth_coordinates(self, new_x, new_y, new_z, prev_x, prev_y, prev_z):
+    #     """Smooth the coordinates using exponential smoothing."""
+    #     if prev_x is None or prev_y is None or prev_z is None:
+    #         return new_x, new_y, new_z
+    #     smoothed_x = self.ALPHA * new_x + (1 - self.ALPHA) * prev_x
+    #     smoothed_y = self.ALPHA * new_y + (1 - self.ALPHA) * prev_y
+    #     smoothed_z = self.ALPHA * new_z + (1 - self.ALPHA) * prev_z
+    #     return smoothed_x, smoothed_y, smoothed_z
 
     def send_coordinates(self, x, y, z):
         """Send normalized coordinates and distance to Godot via UDP."""
@@ -80,11 +112,24 @@ class FaceTracker:
             norm_x = (x / w) * 2 - 1
             norm_y = -((y / h) * 2 - 1)
             norm_z = (distance - 30) / 100
-            self.smoothed_x, self.smoothed_y, self.smoothed_z = self.smooth_coordinates(
-                norm_x, norm_y, norm_z, 
-                self.smoothed_x, self.smoothed_y, self.smoothed_z
-            )
-            self.send_coordinates(self.smoothed_x, self.smoothed_y, self.smoothed_z)
+
+            # Update Kalman Filters
+            measured_x = np.array([[np.float32(norm_x)]])
+            self.kalman_x.correct(measured_x)
+            pred_x = self.kalman_x.predict()
+            self.filtered_x = pred_x[0][0]  # Assign to instance variable
+
+            measured_y = np.array([[np.float32(norm_y)]])
+            self.kalman_y.correct(measured_y)
+            pred_y = self.kalman_y.predict()
+            self.filtered_y = pred_y[0][0]  # Assign to instance variable
+
+            measured_z = np.array([[np.float32(norm_z)]])
+            self.kalman_z.correct(measured_z)
+            pred_z = self.kalman_z.predict()
+            self.filtered_z = pred_z[0][0]  # Assign to instance variable
+
+            self.send_coordinates(self.filtered_x, self.filtered_y, self.filtered_z)
         self.frame_processed.set()
 
     def run(self, fps_interval=1):
@@ -143,7 +188,7 @@ class FaceTracker:
                     if self.eye_center_coords:
                         mirrored_x = display_frame.shape[1] - self.eye_center_coords[0]
                         cv2.circle(display_frame, (mirrored_x, self.eye_center_coords[1]), 5, (0, 255, 0), -1)
-                        cv2.putText(display_frame, f'X: {self.smoothed_x:.4f}, Y: {self.smoothed_y:.4f}, Z: {self.smoothed_z:.4f}', (10, 90),
+                        cv2.putText(display_frame, f'X: {self.filtered_x:.4f}, Y: {self.filtered_y:.4f}, Z: {self.filtered_z:.4f}', (10, 90),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
                     cv2.putText(display_frame, f'FPS: {self.fps:.2f}', (10, 30),

@@ -131,9 +131,10 @@ light_color = Color(1, 0.956177, 0.866958, 1)
 light_energy = 1.186
 shadow_enabled = true
 
-[node name="Secondary" type="Camera3D" parent="."]
-transform = Transform3D(0.859789, -0.0798697, -0.504364, -0.0669873, 0.961516, -0.266456, 0.506236, 0.262882, 0.821351, -20, -8, 25)
+[node name="Secondary" type="Camera3D" parent="." node_paths=PackedStringArray("Main")]
+transform = Transform3D(0.965926, 0.129409, 0.224144, -0.0669873, 0.961516, -0.266456, -0.25, 0.242362, 0.937422, -1, -8, 29)
 script = ExtResource("9_ik1kx")
+Main = NodePath("../Main")
 
 [node name="Node3D" type="MeshInstance3D" parent="Secondary"]
 transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
@@ -143,6 +144,7 @@ mesh = SubResource("PrismMesh_xc034")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
 current = true
 script = ExtResource("4_rcw5v")
+z_offset = -2
 
 [node name="Node3D" type="MeshInstance3D" parent="Main"]
 transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
