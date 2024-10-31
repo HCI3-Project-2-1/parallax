@@ -1,8 +1,9 @@
 #include "camera_extension.hpp"
 
 // TODO make this a relative path
-const char *MODEL_PATH = "/home/pedro/uni/year_2/hci/project/godot_project/"
-                         "assets/face_detection_model.dat";
+const char *MODEL_PATH =
+    "/home/pedro/uni/year_2/hci/project/parallax/godot_project/"
+    "assets/face_detection_model.dat";
 const float DEFAULT_Z = 10.0;
 const int NOSE_TIP_IDX = 30;
 
@@ -16,8 +17,8 @@ CameraExtension::CameraExtension() {
   previousEyeScreenCoords = {0.0, 0.0};
   rawEyeScreenCoords = {0.0, 0.0};
 
-  load_model();
-  /*open_camera();*/
+  /*load_model();*/
+  open_camera();
 }
 
 CameraExtension::~CameraExtension() {}
@@ -42,20 +43,25 @@ void CameraExtension::_process(double delta) {
 
 void CameraExtension::load_model() {
   this->face_detector = dlib::get_frontal_face_detector();
-  godot::UtilityFunctions::print("loaded face detector");
+  godot::UtilityFunctions::print("instatiated face detector");
   this->pose_model = dlib::shape_predictor();
-  godot::UtilityFunctions::print("loaded pose model");
+  godot::UtilityFunctions::print("instatiated pose model");
 
   try {
     dlib::deserialize(MODEL_PATH) >> pose_model;
   } catch (dlib::serialization_error &e) {
     godot::UtilityFunctions::print("failed to load model: ", e.what());
   }
+
+  godot::UtilityFunctions::print("loaded model");
 }
 
 void CameraExtension::open_camera() {
-  this->capture = cv::VideoCapture(0);
-  if (!this->capture.isOpened()) {
+  this->capture = cv::VideoCapture();
+
+  godot::UtilityFunctions::print("opening camera");
+
+  if (!this->capture.open(0, cv::CAP_V4L2)) {
     godot::UtilityFunctions::print("failed to open camera");
   }
 }
