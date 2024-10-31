@@ -17,16 +17,28 @@ CameraExtension::CameraExtension() {
   previousEyeScreenCoords = {0.0, 0.0};
   rawEyeScreenCoords = {0.0, 0.0};
 
-  /*load_model();*/
+  load_model();
   open_camera();
+
+  godot::UtilityFunctions::print("CameraExtension instatiated");
 }
 
-CameraExtension::~CameraExtension() {}
+CameraExtension::~CameraExtension() {
+  this->capture.release();
+  godot::UtilityFunctions::print("camera device released");
+  godot::UtilityFunctions::print("CameraExtension destroyed");
+}
 
 void CameraExtension::_process(double delta) {
+  if (this->iterations++ % 30 != 0) {
+    return;
+  }
+
+  godot::UtilityFunctions::print("before computing eye delta");
+
   this->time_passed += delta;
 
-  /*godot::UtilityFunctions::print("time passed: ", this->time_passed);*/
+  godot::UtilityFunctions::print("time passed: ", this->time_passed);
 
   /*EyeScreenCoords newCoords = this->resolve_eye_coords();*/
   EyeScreenCoords newCoords = {-1.0, -1.0};
@@ -42,15 +54,22 @@ void CameraExtension::_process(double delta) {
 }
 
 void CameraExtension::load_model() {
+  /*godot::UtilityFunctions::print("model path: ", MODEL_PATH);*/
+
+  // TODO these dlib calls cause the object to be destroyed then re-created
   this->face_detector = dlib::get_frontal_face_detector();
   godot::UtilityFunctions::print("instatiated face detector");
   this->pose_model = dlib::shape_predictor();
   godot::UtilityFunctions::print("instatiated pose model");
 
   try {
-    dlib::deserialize(MODEL_PATH) >> pose_model;
-  } catch (dlib::serialization_error &e) {
+    dlib::deserialize(MODEL_PATH) >> this->pose_model;
+  } catch (const dlib::serialization_error &e) {
     godot::UtilityFunctions::print("failed to load model: ", e.what());
+  } catch (const std::exception &e) {
+    godot::UtilityFunctions::print("general error: ", e.what());
+  } catch (...) {
+    godot::UtilityFunctions::print("unknown error");
   }
 
   godot::UtilityFunctions::print("loaded model");
@@ -89,23 +108,37 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
     return {-1.0, -1.0};
   }
 
+  godot::UtilityFunctions::print("read frame");
+
   cv::Mat gray;
   cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
   dlib::cv_image<dlib::bgr_pixel> cimg(frame);
 
+  godot::UtilityFunctions::print("converted frame to dlib image");
+
   std::vector<dlib::rectangle> faces = face_detector(cimg);
 
+  godot::UtilityFunctions::print("applied face detector");
+
   if (faces.size() == 0) {
-    std::cerr << "no faces detected" << std::endl;
+    godot::UtilityFunctions::print("no faces detected");
     return {-1.0, -1.0};
   }
 
   dlib::rectangle face = faces[0];
+
+  godot::UtilityFunctions::print("detected face");
+
   dlib::full_object_detection shape = this->pose_model(cimg, face);
+
+  godot::UtilityFunctions::print("applied pose model");
 
   this->rawEyeScreenCoords = {(float)shape.part(NOSE_TIP_IDX).x(),
                               (float)shape.part(NOSE_TIP_IDX).y()};
+
+  godot::UtilityFunctions::print("extracted raw eye coords");
+
   this->smooth_coordinates();
 
   int screenWidth = frame.cols;

@@ -24,6 +24,7 @@ private:
   cv::Mat frame;
   cv::VideoCapture capture;
 
+  int iterations;
   double time_passed;
   float alpha;
   EyeScreenCoords smoothedEyeScreenCoords, previousEyeScreenCoords,
