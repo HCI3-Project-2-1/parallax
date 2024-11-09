@@ -4,6 +4,7 @@
 const char *MODEL_PATH = "/home/pedro/uni/year_2/hci/project/godot_project/"
                          "assets/face_detection_model.dat";
 const float DEFAULT_Z = 10.0;
+const int CAMERA_COORDS_SCALAR = 1;
 const int NOSE_TIP_IDX = 30;
 
 using namespace godot;
@@ -87,26 +88,33 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
   // cv::waitKey(0);
   // cv::destroyWindow("current frame");
 
-  // cv::Mat gray;
-  // cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+  cv::Mat gray;
+  cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
   auto cimg = dlib::cv_image<dlib::bgr_pixel>(frame);
 
-  auto startTime = std::chrono::high_resolution_clock::now();
-  auto faces = face_detector(cimg);
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
-  godot::UtilityFunctions::print("face detector took ", duration, "ms");
+  if (!this->has_detected_face) {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    auto faces = face_detector(cimg);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::high_resolution_clock::now() - startTime)
+                        .count();
+    godot::UtilityFunctions::print("face detector took ", duration, "ms");
 
-  if (faces.empty()) {
-    return {-1.0, -1.0};
+    if (faces.empty()) {
+      return {-1.0, -1.0};
+    }
+
+    this->face_rect = faces[0];
+    this->has_detected_face = true;
   }
 
-  const dlib::rectangle target_face = faces[0];
-
-  auto startTime2 = std::chrono::high_resolution_clock::now();
-  dlib::full_object_detection shape = this->pose_model(cimg, target_face);
-  auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime2).count();
-  godot::UtilityFunctions::print("pose model took ", duration2, "ms");
+  auto startTime = std::chrono::high_resolution_clock::now();
+  dlib::full_object_detection shape = this->pose_model(cimg, this->face_rect);
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+                      std::chrono::high_resolution_clock::now() - startTime)
+                      .count();
+  godot::UtilityFunctions::print("pose model took ", duration, "ms");
 
   this->rawEyeScreenCoords = {(float)shape.part(NOSE_TIP_IDX).x(),
                               (float)shape.part(NOSE_TIP_IDX).y()};
@@ -125,14 +133,6 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
   return {norm_x, norm_y};
 }
 
-float my_round(
-    float x,
-    int num_decimal_precision_digits)
-{
-  float power_of_10 = std::pow(10, num_decimal_precision_digits);
-  return std::round(x * power_of_10)  / power_of_10;
-}
-
 void CameraExtension::_process(double delta) {
   // this->time_passed += delta;
   // godot::UtilityFunctions::print("time passed: ", this->time_passed);
@@ -145,9 +145,11 @@ void CameraExtension::_process(double delta) {
     return;
   }
 
-  godot::UtilityFunctions::print("newCoords: ", my_round(newCoords.x, 2), " , ", my_round(newCoords.y, 2));
+  godot::UtilityFunctions::print("newCoords: ", newCoords.x, " , ",
+                                 newCoords.y);
 
-  Vector3 new_position = Vector3(newCoords.x, newCoords.y, DEFAULT_Z);
+  Vector3 new_position =
+      Vector3(newCoords.x, newCoords.y, DEFAULT_Z) * CAMERA_COORDS_SCALAR;
 
   this->set_position(new_position);
 }

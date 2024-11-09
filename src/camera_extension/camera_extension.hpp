@@ -23,6 +23,8 @@ private:
   dlib::shape_predictor pose_model;
   cv::Mat frame;
   cv::VideoCapture capture;
+  bool has_detected_face;
+  dlib::rectangle face_rect;
 
   int iterations;
   double time_passed;
