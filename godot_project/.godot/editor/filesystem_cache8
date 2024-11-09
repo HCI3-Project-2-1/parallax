@@ -1,7 +1,7 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1730398118
-icon.svg::CompressedTexture2D::1504738194390351729::1730321319::1730322785::1::::<><>::
-main.tscn::PackedScene::7716043702221944628::1730390577::0::1::::<><>::
-::res://assets/::1730321319
-::res://bin/::1730398104
-camera_extension.gdextension::GDExtension::-1::1730323599::0::1::::<><>::
+::res://::1731187756
+icon.svg::CompressedTexture2D::7654162580345911434::1727368588::1731144359::1::::<><>::
+main.tscn::PackedScene::7716043702221944628::1730991288::0::1::::<><>::
+::res://assets/::1730320499
+::res://bin/::1731187754
+camera_extension.gdextension::GDExtension::-1::1731144998::0::1::::<><>::

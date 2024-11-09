@@ -7,7 +7,7 @@ env = SConscript("include/godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/", "include/godot-cpp/include/", "/usr/include/opencv4"])
 
 env.Append(LIBPATH=["/usr/lib/"])
-env.Append(LIBS=["opencv_core", "opencv_videoio", "dlib", "lapack", "blas"])
+env.Append(LIBS=["opencv_core", "opencv_highgui", "opencv_videoio", "dlib", "lapack", "blas"])
 
 # we need exceptions for dlib model loading
 env.Append(CCFLAGS=["-fexceptions"])

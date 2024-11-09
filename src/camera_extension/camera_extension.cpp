@@ -1,9 +1,8 @@
 #include "camera_extension.hpp"
 
 // TODO make this a relative path
-const char *MODEL_PATH =
-    "/home/pedro/uni/year_2/hci/project/parallax/godot_project/"
-    "assets/face_detection_model.dat";
+const char *MODEL_PATH = "/home/pedro/uni/year_2/hci/project/godot_project/"
+                         "assets/face_detection_model.dat";
 const float DEFAULT_Z = 10.0;
 const int NOSE_TIP_IDX = 30;
 
@@ -20,7 +19,7 @@ CameraExtension::CameraExtension() {
   load_model();
   open_camera();
 
-  godot::UtilityFunctions::print("CameraExtension instatiated");
+  godot::UtilityFunctions::print("CameraExtension instantiated");
 }
 
 CameraExtension::~CameraExtension() {
@@ -29,38 +28,14 @@ CameraExtension::~CameraExtension() {
   godot::UtilityFunctions::print("CameraExtension destroyed");
 }
 
-void CameraExtension::_process(double delta) {
-  if (this->iterations++ % 30 != 0) {
-    return;
-  }
-
-  godot::UtilityFunctions::print("before computing eye delta");
-
-  this->time_passed += delta;
-
-  godot::UtilityFunctions::print("time passed: ", this->time_passed);
-
-  /*EyeScreenCoords newCoords = this->resolve_eye_coords();*/
-  EyeScreenCoords newCoords = {-1.0, -1.0};
-
-  // negatives coords when failed to read frame or no face is detected
-  if (newCoords.x < 0 || newCoords.y < 0) {
-    return;
-  }
-
-  Vector3 new_position = Vector3(newCoords.x, newCoords.y, DEFAULT_Z);
-
-  this->set_position(new_position);
-}
-
 void CameraExtension::load_model() {
   /*godot::UtilityFunctions::print("model path: ", MODEL_PATH);*/
 
   // TODO these dlib calls cause the object to be destroyed then re-created
   this->face_detector = dlib::get_frontal_face_detector();
-  godot::UtilityFunctions::print("instatiated face detector");
+  godot::UtilityFunctions::print("instantiated face detector");
   this->pose_model = dlib::shape_predictor();
-  godot::UtilityFunctions::print("instatiated pose model");
+  godot::UtilityFunctions::print("instantiated pose model");
 
   try {
     dlib::deserialize(MODEL_PATH) >> this->pose_model;
@@ -78,10 +53,10 @@ void CameraExtension::load_model() {
 void CameraExtension::open_camera() {
   this->capture = cv::VideoCapture();
 
-  godot::UtilityFunctions::print("opening camera");
+  godot::UtilityFunctions::print("instantiated capture");
 
   if (!this->capture.open(0, cv::CAP_V4L2)) {
-    godot::UtilityFunctions::print("failed to open camera");
+    godot::UtilityFunctions::print("failed to open camera device");
   }
 }
 
@@ -108,36 +83,33 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
     return {-1.0, -1.0};
   }
 
-  godot::UtilityFunctions::print("read frame");
+  // cv::imshow("current frame", frame);
+  // cv::waitKey(0);
+  // cv::destroyWindow("current frame");
 
-  cv::Mat gray;
-  cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+  // cv::Mat gray;
+  // cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
-  dlib::cv_image<dlib::bgr_pixel> cimg(frame);
+  auto cimg = dlib::cv_image<dlib::bgr_pixel>(frame);
 
-  godot::UtilityFunctions::print("converted frame to dlib image");
+  auto startTime = std::chrono::high_resolution_clock::now();
+  auto faces = face_detector(cimg);
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
+  godot::UtilityFunctions::print("face detector took ", duration, "ms");
 
-  std::vector<dlib::rectangle> faces = face_detector(cimg);
-
-  godot::UtilityFunctions::print("applied face detector");
-
-  if (faces.size() == 0) {
-    godot::UtilityFunctions::print("no faces detected");
+  if (faces.empty()) {
     return {-1.0, -1.0};
   }
 
-  dlib::rectangle face = faces[0];
+  const dlib::rectangle target_face = faces[0];
 
-  godot::UtilityFunctions::print("detected face");
-
-  dlib::full_object_detection shape = this->pose_model(cimg, face);
-
-  godot::UtilityFunctions::print("applied pose model");
+  auto startTime2 = std::chrono::high_resolution_clock::now();
+  dlib::full_object_detection shape = this->pose_model(cimg, target_face);
+  auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime2).count();
+  godot::UtilityFunctions::print("pose model took ", duration2, "ms");
 
   this->rawEyeScreenCoords = {(float)shape.part(NOSE_TIP_IDX).x(),
                               (float)shape.part(NOSE_TIP_IDX).y()};
-
-  godot::UtilityFunctions::print("extracted raw eye coords");
 
   this->smooth_coordinates();
 
@@ -151,4 +123,31 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
   float norm_y = -((smoothedEyeScreenCoords.y / screenHeight) * 2 - 1);
 
   return {norm_x, norm_y};
+}
+
+float my_round(
+    float x,
+    int num_decimal_precision_digits)
+{
+  float power_of_10 = std::pow(10, num_decimal_precision_digits);
+  return std::round(x * power_of_10)  / power_of_10;
+}
+
+void CameraExtension::_process(double delta) {
+  // this->time_passed += delta;
+  // godot::UtilityFunctions::print("time passed: ", this->time_passed);
+
+  EyeScreenCoords newCoords = this->resolve_eye_coords();
+
+  // TODO robust error handling
+  if (newCoords.x == -1.0 && newCoords.y == -1.0) {
+    godot::UtilityFunctions::print("no faces detected");
+    return;
+  }
+
+  godot::UtilityFunctions::print("newCoords: ", my_round(newCoords.x, 2), " , ", my_round(newCoords.y, 2));
+
+  Vector3 new_position = Vector3(newCoords.x, newCoords.y, DEFAULT_Z);
+
+  this->set_position(new_position);
 }
