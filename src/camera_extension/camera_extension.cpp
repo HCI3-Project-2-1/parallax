@@ -1,9 +1,18 @@
 #include "camera_extension.hpp"
 
 // TODO make this a relative path
-const char *MODEL_PATH = "/home/pedro/uni/year_2/hci/project/godot_project/"
-                         "assets/face_detection_model.dat";
+const char *MODEL_PATH =
+    "/home/pedro/uni/year_2/hci/project/parallax/godot_project/"
+    "assets/face_detection_model.dat";
 const float DEFAULT_Z = 10.0;
+
+// -1.0 for both to use default camera resolution
+const int CAMERA_WIDTH = -1.0;
+const int CAMERA_HEIGHT = -1.0;
+
+// post-processing downscaling factor
+const float INPUT_FRAME_SCALE_FACTOR = 0.35;
+
 const int CAMERA_COORDS_SCALAR = 1;
 const int NOSE_TIP_IDX = 30;
 
@@ -58,6 +67,15 @@ void CameraExtension::open_camera() {
 
   if (!this->capture.open(0, cv::CAP_V4L2)) {
     godot::UtilityFunctions::print("failed to open camera device");
+    return;
+  }
+
+  if (CAMERA_WIDTH != -1 && CAMERA_HEIGHT != -1) {
+    this->capture.set(cv::CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH);
+    this->capture.set(cv::CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT);
+
+    godot::UtilityFunctions::print("set camera resolution to ", CAMERA_WIDTH,
+                                   "x", CAMERA_HEIGHT);
   }
 }
 
@@ -88,32 +106,36 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
   // cv::waitKey(0);
   // cv::destroyWindow("current frame");
 
+  if (INPUT_FRAME_SCALE_FACTOR != 1.0) {
+    godot::UtilityFunctions::print("downscaling frame");
+    cv::resize(frame, frame, cv::Size(), INPUT_FRAME_SCALE_FACTOR,
+               INPUT_FRAME_SCALE_FACTOR);
+  }
+
   cv::Mat gray;
   cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
   auto cimg = dlib::cv_image<dlib::bgr_pixel>(frame);
 
-  if (!this->has_detected_face) {
-    auto startTime = std::chrono::high_resolution_clock::now();
-    auto faces = face_detector(cimg);
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-                        std::chrono::high_resolution_clock::now() - startTime)
-                        .count();
-    godot::UtilityFunctions::print("face detector took ", duration, "ms");
-
-    if (faces.empty()) {
-      return {-1.0, -1.0};
-    }
-
-    this->face_rect = faces[0];
-    this->has_detected_face = true;
-  }
-
   auto startTime = std::chrono::high_resolution_clock::now();
-  dlib::full_object_detection shape = this->pose_model(cimg, this->face_rect);
+  auto faces = this->face_detector(cimg);
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::high_resolution_clock::now() - startTime)
                       .count();
+  godot::UtilityFunctions::print("face detector took ", duration, "ms");
+
+  if (faces.empty()) {
+    return {-1.0, -1.0};
+  }
+
+  this->face_rect = faces[0];
+  this->has_detected_face = true;
+
+  startTime = std::chrono::high_resolution_clock::now();
+  dlib::full_object_detection shape = this->pose_model(cimg, this->face_rect);
+  duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+                 std::chrono::high_resolution_clock::now() - startTime)
+                 .count();
   godot::UtilityFunctions::print("pose model took ", duration, "ms");
 
   this->rawEyeScreenCoords = {(float)shape.part(NOSE_TIP_IDX).x(),
