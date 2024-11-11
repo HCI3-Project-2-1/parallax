@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://c73evq08u0jcb"]
+[gd_scene load_steps=36 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Texture2D" uid="uid://c4n3utb07tcu6" path="res://textures/coast_sand_rocks_02_diff_2k.png" id="1_xdxha"]
 [ext_resource type="Texture2D" uid="uid://ct7a8cwsr15ot" path="res://textures/coast_sand_rocks_02_nor_gl_2k.png" id="2_07mwx"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://control.gd" id="9_f26jl"]
 [ext_resource type="Script" path="res://secondary.gd" id="9_ik1kx"]
 [ext_resource type="Shader" path="res://webcam.gdshader" id="10_fuq1o"]
+[ext_resource type="Script" path="res://udp_listener.gd" id="12_0if6w"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vidia"]
 sky_top_color = Color(0.353597, 0.451107, 0.55, 1)
@@ -144,7 +145,6 @@ mesh = SubResource("PrismMesh_xc034")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
 current = true
 script = ExtResource("4_rcw5v")
-z_offset = -2
 
 [node name="Node3D" type="MeshInstance3D" parent="Main"]
 transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
@@ -577,3 +577,6 @@ texture = SubResource("CameraTexture_kmqkp")
 expand_mode = 5
 stretch_mode = 4
 flip_h = true
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("12_0if6w")

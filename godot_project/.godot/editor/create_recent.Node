@@ -1,3 +1,4 @@
+Node
 MeshInstance3D
 CollisionShape3D
 RigidBody3D
@@ -11,4 +12,3 @@ SoftBody3D
 GridContainer
 AspectRatioContainer
 Area2D
-DirectionalLight3D
