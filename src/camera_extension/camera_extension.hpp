@@ -20,6 +20,7 @@ class CameraExtension : public Camera3D {
 
 private:
   dlib::frontal_face_detector face_detector;
+  cv::CascadeClassifier left_eye_detector;
   dlib::shape_predictor pose_model;
   cv::Mat frame;
   cv::VideoCapture capture;
@@ -28,7 +29,6 @@ private:
 
   int iterations;
   double time_passed;
-  float alpha;
   EyeScreenCoords smoothedEyeScreenCoords, previousEyeScreenCoords,
       rawEyeScreenCoords, finalEyeScreenCoords;
 
@@ -45,7 +45,8 @@ public:
 
   void smooth_coordinates();
 
-  EyeScreenCoords resolve_eye_coords();
+  EyeScreenCoords dlib_resolve_eye_coords();
+  EyeScreenCoords opencv_resolve_eye_coords();
 
   void _process(double delta) override;
 };

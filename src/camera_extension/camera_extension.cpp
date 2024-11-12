@@ -4,6 +4,9 @@
 const char *MODEL_PATH =
     "/home/pedro/uni/year_2/hci/project/parallax/godot_project/"
     "assets/face_detection_model.dat";
+const char *HAAR_CASCADE_PATH =
+    "/home/pedro/uni/year_2/hci/project/parallax/godot_project/"
+    "assets/haarcascade_lefteye.xml";
 const float DEFAULT_Z = 10.0;
 
 // -1.0 for both to use default camera resolution
@@ -11,10 +14,13 @@ const int CAMERA_WIDTH = -1.0;
 const int CAMERA_HEIGHT = -1.0;
 
 // post-processing downscaling factor
-const float INPUT_FRAME_SCALE_FACTOR = 0.35;
+const float INPUT_FRAME_SCALE_FACTOR = 1.0;
 
 const int CAMERA_COORDS_SCALAR = 1;
 const int NOSE_TIP_IDX = 30;
+
+// between-frame-coords smoothing factor
+const float ALPHA = 0.5;
 
 using namespace godot;
 
@@ -22,7 +28,6 @@ void CameraExtension::_bind_methods() {}
 
 CameraExtension::CameraExtension() {
   time_passed = 0.0;
-  alpha = 0.5;
   previousEyeScreenCoords = {0.0, 0.0};
   rawEyeScreenCoords = {0.0, 0.0};
 
@@ -42,7 +47,7 @@ void CameraExtension::load_model() {
   /*godot::UtilityFunctions::print("model path: ", MODEL_PATH);*/
 
   // TODO these dlib calls cause the object to be destroyed then re-created
-  this->face_detector = dlib::get_frontal_face_detector();
+  this->left_eye_detector = cv::CascadeClassifier(HAAR_CASCADE_PATH);
   godot::UtilityFunctions::print("instantiated face detector");
   this->pose_model = dlib::shape_predictor();
   godot::UtilityFunctions::print("instantiated pose model");
@@ -81,23 +86,24 @@ void CameraExtension::open_camera() {
 
 void CameraExtension::smooth_coordinates() {
   // negatives coords when no face is detected
-  if (previousEyeScreenCoords.x < 0 || previousEyeScreenCoords.y < 0) {
+  if (this->previousEyeScreenCoords.x < 0 ||
+      this->previousEyeScreenCoords.y < 0) {
     this->smoothedEyeScreenCoords = this->rawEyeScreenCoords;
   } else {
     this->smoothedEyeScreenCoords = {
-        this->alpha * this->rawEyeScreenCoords.x +
-            (1 - this->alpha) * this->previousEyeScreenCoords.x,
-        this->alpha * this->rawEyeScreenCoords.y +
-            (1 - this->alpha) * this->previousEyeScreenCoords.y};
+        ALPHA * this->rawEyeScreenCoords.x +
+            (1 - ALPHA) * this->previousEyeScreenCoords.x,
+        ALPHA * this->rawEyeScreenCoords.y +
+            (1 - ALPHA) * this->previousEyeScreenCoords.y};
   }
 
-  this->previousEyeScreenCoords = {smoothedEyeScreenCoords.x,
-                                   smoothedEyeScreenCoords.y};
+  this->previousEyeScreenCoords = {this->smoothedEyeScreenCoords.x,
+                                   this->smoothedEyeScreenCoords.y};
 }
 
-EyeScreenCoords CameraExtension::resolve_eye_coords() {
+EyeScreenCoords CameraExtension::dlib_resolve_eye_coords() {
   this->capture >> this->frame;
-  if (frame.empty()) {
+  if (this->frame.empty()) {
     godot::UtilityFunctions::print("failed to read frame");
     return {-1.0, -1.0};
   }
@@ -108,12 +114,14 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
 
   if (INPUT_FRAME_SCALE_FACTOR != 1.0) {
     godot::UtilityFunctions::print("downscaling frame");
-    cv::resize(frame, frame, cv::Size(), INPUT_FRAME_SCALE_FACTOR,
+    cv::resize(this->frame, this->frame, cv::Size(), INPUT_FRAME_SCALE_FACTOR,
                INPUT_FRAME_SCALE_FACTOR);
   }
 
+  // TODO is allocation of cv::Mats expensive ? or any other allocation in this
+  // function ?
   cv::Mat gray;
-  cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+  cv::cvtColor(this->frame, gray, cv::COLOR_BGR2GRAY);
 
   auto cimg = dlib::cv_image<dlib::bgr_pixel>(frame);
 
@@ -143,14 +151,49 @@ EyeScreenCoords CameraExtension::resolve_eye_coords() {
 
   this->smooth_coordinates();
 
-  int screenWidth = frame.cols;
-  int screenHeight = frame.rows;
+  int screenWidth = this->frame.cols;
+  int screenHeight = this->frame.rows;
 
   // normalize the coordinates over the screen matrix (frame)
   // `* 2 - 1` scales the normalized value from [0, 1] to [-1, 1]
-  float norm_x = (smoothedEyeScreenCoords.x / screenWidth) * 2 - 1;
+  float norm_x = (this->smoothedEyeScreenCoords.x / screenWidth) * 2 - 1;
   // invert the y axis since the screen coordinates have top-left origin
-  float norm_y = -((smoothedEyeScreenCoords.y / screenHeight) * 2 - 1);
+  float norm_y = -((this->smoothedEyeScreenCoords.y / screenHeight) * 2 - 1);
+
+  return {norm_x, norm_y};
+}
+
+EyeScreenCoords CameraExtension::opencv_resolve_eye_coords() {
+  this->capture >> this->frame;
+  if (this->frame.empty()) {
+    godot::UtilityFunctions::print("failed to read frame");
+    return {-1.0, -1.0};
+  }
+
+  // TODO is allocation of cv::Rects expensive ?
+  std::vector<cv::Rect> left_eye_rects;
+  this->left_eye_detector.detectMultiScale(this->frame, left_eye_rects);
+
+  if (left_eye_rects.empty()) {
+    return {-1.0, -1.0};
+  }
+
+  cv::Rect left_eye_rect = left_eye_rects[0];
+
+  this->rawEyeScreenCoords = {
+      (float)left_eye_rect.x + (float)left_eye_rect.width / 2,
+      (float)left_eye_rect.y + (float)left_eye_rect.height / 2};
+
+  this->smooth_coordinates();
+
+  int screenWidth = this->frame.cols;
+  int screenHeight = this->frame.rows;
+
+  // normalize the coordinates over the screen matrix (frame)
+  // `* 2 - 1` scales the normalized value from [0, 1] to [-1, 1]
+  // invert the y axis since the screen coordinates have top-left origin
+  float norm_x = (this->smoothedEyeScreenCoords.x / screenWidth) * 2 - 1;
+  float norm_y = -((this->smoothedEyeScreenCoords.y / screenHeight) * 2 - 1);
 
   return {norm_x, norm_y};
 }
@@ -159,7 +202,11 @@ void CameraExtension::_process(double delta) {
   // this->time_passed += delta;
   // godot::UtilityFunctions::print("time passed: ", this->time_passed);
 
-  EyeScreenCoords newCoords = this->resolve_eye_coords();
+  auto startTime = std::chrono::high_resolution_clock::now();
+  EyeScreenCoords newCoords = this->opencv_resolve_eye_coords();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+                      std::chrono::high_resolution_clock::now() - startTime)
+                      .count();
 
   // TODO robust error handling
   if (newCoords.x == -1.0 && newCoords.y == -1.0) {
@@ -167,8 +214,11 @@ void CameraExtension::_process(double delta) {
     return;
   }
 
-  godot::UtilityFunctions::print("newCoords: ", newCoords.x, " , ",
-                                 newCoords.y);
+  godot::UtilityFunctions::print("eye coords computation took ", duration,
+                                 "ms");
+
+  /*godot::UtilityFunctions::print("newCoords: ", newCoords.x, " , ",*/
+  /*                               newCoords.y);*/
 
   Vector3 new_position =
       Vector3(newCoords.x, newCoords.y, DEFAULT_Z) * CAMERA_COORDS_SCALAR;

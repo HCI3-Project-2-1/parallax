@@ -1,7 +1,8 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1731345525
+::res://::1731429273
 icon.svg::CompressedTexture2D::1504738194390351729::1730321319::1731340848::1::::<><>::
 main.tscn::PackedScene::7716043702221944628::1730390577::0::1::::<><>::
-::res://assets/::1730321319
-::res://bin/::1731345203
+::res://assets/::1731427535
+haarcascade_lefteye.xml::TextFile::-1::1731427503::0::1::::<><>::
+::res://bin/::1731429258
 camera_extension.gdextension::GDExtension::-1::1731340517::0::1::::<><>::
