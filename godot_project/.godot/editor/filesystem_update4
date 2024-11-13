@@ -1,3 +1,5 @@
 res://main.tscn
 res://webcam.gdshader
 res://udp_listener.gd
+res://scene2.tscn
+res://Scene3/scene3.tscn

@@ -6,8 +6,6 @@ var port = 13456  # Adjust the port if needed
 var total_latency_sum = 0.0  # Sum of timestamp differences and processing times
 var package_number = 0  # To track the total number of packets
 var old_timestamp = -1.0  # Initialize with -1.0 to indicate no previous timestamp
-var max_packages = 100  # Maximum packets to log; make it configurable.
-						# This can be removed or changed based on the needs.
 var log_data = []  # Store packet data in a list for structured output
 
 # Store the start time in microseconds when the script begins
@@ -30,10 +28,11 @@ func _ready():
 	set_process_input(true)
 
 # Called every frame
+@warning_ignore("unused_parameter")
 func _process(delta):
 	udp_server.poll()
 
-	if udp_server.is_connection_available() and package_number < max_packages:
+	if udp_server.is_connection_available():
 		# Start measuring the time to process the data
 		var processing_start = Time.get_ticks_usec()
 
