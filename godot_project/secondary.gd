@@ -13,7 +13,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	#look_at(Main.global_position, Vector3.UP)
 	# Handle movement input (WASD)
-	look_at(Main.position)
+	#look_at(Main.position)
 	_handle_movement(delta)
 
 # Function to handle movement based on WASD keys

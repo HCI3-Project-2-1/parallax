@@ -133,7 +133,7 @@ light_energy = 1.186
 shadow_enabled = true
 
 [node name="Secondary" type="Camera3D" parent="." node_paths=PackedStringArray("Main")]
-transform = Transform3D(0.965926, 0.129409, 0.224144, -0.0669873, 0.961516, -0.266456, -0.25, 0.242362, 0.937422, -1, -8, 29)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 30)
 script = ExtResource("9_ik1kx")
 Main = NodePath("../Main")
 
