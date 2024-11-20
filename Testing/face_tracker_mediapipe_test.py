@@ -3,78 +3,87 @@ import mediapipe as mp
 import socket
 import time  # For timestamp
 import psutil  # For CPU and memory usage tracking
-from parallax.Testing.performance_metrics import PerformanceMetrics  # Import your performance metrics class
 
+from Testing.face_tracker_dnn_testing import get_system_info, write_performance_results_to_file
+from performance_metrics import PerformanceMetrics # Import your performance metrics class
 
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
 UDP_PORT = 13456  # Changed to a valid port number
 ALPHA = 0.3  # Smoothing factor for low-pass filter
+FOCAL_LENGTH = 615  # Estimated focal length for distance calculation
+FACE_WIDTH_CM = 14  # Approximate width of a face in centimeters
 
 # Initialize MediaPipe Face Mesh for more detailed facial landmarks
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
 
 
-def smooth_coordinates(new_x, new_y, prev_x, prev_y, alpha):
+def smooth_coordinates(new_x, new_y, new_z, prev_x, prev_y, prev_z, alpha):
     """Smooth the coordinates using exponential smoothing."""
-    if prev_x is None or prev_y is None:
-        return new_x, new_y
+    if prev_x is None or prev_y is None or prev_z is None:
+        return new_x, new_y, new_z
     smoothed_x = alpha * new_x + (1 - alpha) * prev_x
     smoothed_y = alpha * new_y + (1 - alpha) * prev_y
-    return smoothed_x, smoothed_y
+    smoothed_z = alpha * new_z + (1 - alpha) * prev_z
+    return smoothed_x, smoothed_y, smoothed_z
 
 
-def send_coordinates(sock, x, y):
+def estimate_distance(face_width_pixels):
+    """Estimate the distance of the face from the camera in centimeters."""
+    face_width_pixels = max(1, face_width_pixels)  # Avoid division by zero
+    distance = (FACE_WIDTH_CM * FOCAL_LENGTH) / face_width_pixels
+    return distance
+
+
+def send_coordinates(sock, x, y, z):
     """Send normalized coordinates to Godot via UDP, including a timestamp."""
     timestamp = time.time()  # Add timestamp for latency calculation
-    message = f"{timestamp},{x:.4f},{y:.4f}"  # Message includes timestamp
+    message = f"{timestamp},{x:.4f},{y:.4f},{z:.4f}"  # Message includes timestamp and z
     sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
 
+    def get_system_info():
+        """
+        Retrieves current system specifications.
 
-def get_system_info():
-    """
-    Retrieves current system specifications.
+        :return: Dictionary containing system information (CPU speed, CPU count, Total memory)
+        """
+        cpu_speed = psutil.cpu_freq().max  # Max CPU speed in MHz
+        system_info = {
+            'CPU Speed': f"{cpu_speed / 1000:.2f} GHz",  # Convert MHz to GHz
+            'CPU Count': psutil.cpu_count(logical=True),
+            'Total Memory': f"{psutil.virtual_memory().total / (1024 ** 3):.2f} GB"  # Bytes to GB
+        }
+        return system_info
 
-    :return: Dictionary containing system information (CPU speed, CPU count, Total memory)
-    """
-    cpu_speed = psutil.cpu_freq().max  # Max CPU speed in MHz
-    system_info = {
-        'CPU Speed': f"{cpu_speed / 1000:.2f} GHz",  # Convert MHz to GHz
-        'CPU Count': psutil.cpu_count(logical=True),
-        'Total Memory': f"{psutil.virtual_memory().total / (1024 ** 3):.2f} GB"  # Bytes to GB
-    }
-    return system_info
+    def write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps,
+                                          average_cpu,
+                                          average_memory, filename='performance_results_MediaPipe.txt'):
+        """
+        Writes the performance results to a text file.
 
-
-def write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps, average_cpu,
-                                      average_memory, filename='performance_results_MediaPipe.txt'):
-    """
-    Writes the performance results to a text file.
-
-    :param system_info: Dictionary containing system information
-    :param detection_rate: Detection rate of the face tracker
-    :param average_error: Average error of the face tracker
-    :param jitter_x: Jitter in the x-coordinate
-    :param jitter_y: Jitter in the y-coordinate
-    :param fps: Frames per second
-    :param average_cpu: Average CPU usage
-    :param average_memory: Average memory usage
-    :param filename: Name of the file to write the results into
-    """
-    with open(filename, 'w') as file:
-        file.write("System Information:\n")
-        for key, value in system_info.items():
-            file.write(f"{key}: {value}\n")
-        file.write("\nPlease provide your username\n")
-        file.write("\nPerformance Results For MediaPipe:\n")
-        file.write(f"Detection Rate: {detection_rate:.2f}%\n")
-        file.write(f"Average Localization Error: {average_error:.2f}\n")
-        file.write(f"Jitter X: {jitter_x:.2f}\n")
-        file.write(f"Jitter Y: {jitter_y:.2f}\n")
-        file.write(f"Average FPS: {fps:.2f}\n")
-        file.write(f"Average CPU Usage: {average_cpu:.2f}%\n")
-        file.write(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB\n")  # Convert bytes to MB
+        :param system_info: Dictionary containing system information
+        :param detection_rate: Detection rate of the face tracker
+        :param average_error: Average error of the face tracker
+        :param jitter_x: Jitter in the x-coordinate
+        :param jitter_y: Jitter in the y-coordinate
+        :param fps: Frames per second
+        :param average_cpu: Average CPU usage
+        :param average_memory: Average memory usage
+        :param filename: Name of the file to write the results into
+        """
+        with open(filename, 'w') as file:
+            file.write("System Information:\n")
+            for key, value in system_info.items():
+                file.write(f"{key}: {value}\n")
+            file.write("\nPerformance Results For MediaPipe:\n")
+            file.write(f"Detection Rate: {detection_rate:.2f}%\n")
+            file.write(f"Average Localization Error: {average_error:.2f}\n")
+            file.write(f"Jitter X: {jitter_x:.2f}\n")
+            file.write(f"Jitter Y: {jitter_y:.2f}\n")
+            file.write(f"Average FPS: {fps:.2f}\n")
+            file.write(f"Average CPU Usage: {average_cpu:.2f}%\n")
+            file.write(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB\n")  # Convert bytes to MB
 
 
 def main():
@@ -83,23 +92,16 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     # Initialize variables
-    smoothed_x, smoothed_y = None, None
+    smoothed_x, smoothed_y, smoothed_z = None, None, None
 
     # Initialize performance metrics
     performance = PerformanceMetrics()
 
-    # Start capturing video (try from file, fallback to webcam if not available)
+    # Start capturing video
     cap = cv2.VideoCapture(0)  # Replace '0' with your video path if using a video file
-    if not cap.isOpened():
-        print("Video file not found, trying webcam...")
-        cap = cv2.VideoCapture(0)  # Try the webcam if video is not found
-
     if not cap.isOpened():
         print("Error: Could not open video or webcam")
         return
-
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap.get(
-        cv2.CAP_PROP_FRAME_COUNT) > 0 else 0  # Total number of frames in the video
 
     fps = 0  # Initialize fps with a default value
     with mp_face_mesh.FaceMesh(
@@ -136,8 +138,14 @@ def main():
                     x = int(nose_tip.x * w)
                     y = int(nose_tip.y * h)
 
+                    # Calculate face width using cheek landmarks for distance estimation
+                    left_cheek = face_landmarks.landmark[234]
+                    right_cheek = face_landmarks.landmark[454]
+                    face_width_pixels = abs(left_cheek.x - right_cheek.x) * w
+                    distance = estimate_distance(face_width_pixels)  # Calculate z coordinate (distance)
+
                     # Smooth the coordinates
-                    smoothed_x, smoothed_y = smooth_coordinates(x, y, smoothed_x, smoothed_y, ALPHA)
+                    smoothed_x, smoothed_y, smoothed_z = smooth_coordinates(x, y, distance, smoothed_x, smoothed_y, smoothed_z, ALPHA)
 
                     # Record coordinates for jitter calculation
                     performance.add_coordinates_for_jitter(smoothed_x, smoothed_y)
@@ -145,9 +153,10 @@ def main():
                     # Normalize coordinates to range -1 to 1
                     norm_x = (smoothed_x / w) * 2 - 1
                     norm_y = -((smoothed_y / h) * 2 - 1)  # Invert Y-axis to match coordinate system
+                    norm_z = (smoothed_z - 30) / 100  # Adjust Z to a suitable scale
 
                     # Send the normalized coordinates to Godot via UDP with timestamp
-                    send_coordinates(sock, norm_x, norm_y)
+                    send_coordinates(sock, norm_x, norm_y, norm_z)
 
                     # Draw the face mesh annotations on the frame
                     mp_drawing.draw_landmarks(
@@ -160,7 +169,7 @@ def main():
 
                     # Mark the nose tip
                     cv2.circle(frame, (int(smoothed_x), int(smoothed_y)), 5, (255, 0, 0), -1)
-                    cv2.putText(frame, f"({norm_x:.2f}, {norm_y:.2f})", (x + 10, y - 10),
+                    cv2.putText(frame, f"({norm_x:.2f}, {norm_y:.2f}, {norm_z:.2f})", (x + 10, y - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
                 # Update performance metrics
@@ -197,16 +206,16 @@ def main():
             print(f"Average Localization Error: {average_error:.2f}")
             print(f"Jitter X: {jitter_x:.2f}")
             print(f"Jitter Y: {jitter_y:.2f}")
-            print(f"Average FPS: {fps:.2f}")  # fps should now always have a value
+            print(f"Average FPS: {fps:.2f}")
             print(f"Average CPU Usage: {average_cpu:.2f}%")
-            print(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB")  # Convert bytes to MB
+            print(f"Average Memory Usage: {average_memory / (1024 ** 2):.2f} MB")
 
             # Get system information
             system_info = get_system_info()
 
             # Write performance results to file
-            write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps,
-                                              average_cpu, average_memory)
+            # write_performance_results_to_file(system_info, detection_rate, average_error, jitter_x, jitter_y, fps,
+            #                                  average_cpu, average_memory)
 
 
 if __name__ == "__main__":
