@@ -24,27 +24,27 @@ class FaceTracker:
         self.mp_face_mesh = mp.solutions.face_mesh
         self.mp_drawing = mp.solutions.drawing_utils
 
-        # Initialize Kalman Filter for x, y, z
+        # Initialize Kalman Filter for x, y, z with correct order and initial states
         self.kalman_x = cv2.KalmanFilter(2, 1)
         self.kalman_x.measurementMatrix = np.array([[1, 0]], np.float32)
         self.kalman_x.transitionMatrix = np.array([[1, 1],
                                                    [0, 1]], np.float32)
-        self.kalman_x.processNoiseCov = np.array([[1, 0],
-                                                 [0, 1]], np.float32) * 0.03
+        self.kalman_x.processNoiseCov = np.eye(2, dtype=np.float32) * 0.03
+        self.kalman_x.errorCovPre = np.eye(2, dtype=np.float32)
 
         self.kalman_y = cv2.KalmanFilter(2, 1)
         self.kalman_y.measurementMatrix = np.array([[1, 0]], np.float32)
         self.kalman_y.transitionMatrix = np.array([[1, 1],
                                                    [0, 1]], np.float32)
-        self.kalman_y.processNoiseCov = np.array([[1, 0],
-                                                 [0, 1]], np.float32) * 0.03
+        self.kalman_y.processNoiseCov = np.eye(2, dtype=np.float32) * 0.03
+        self.kalman_y.errorCovPre = np.eye(2, dtype=np.float32)
 
         self.kalman_z = cv2.KalmanFilter(2, 1)
         self.kalman_z.measurementMatrix = np.array([[1, 0]], np.float32)
         self.kalman_z.transitionMatrix = np.array([[1, 1],
                                                    [0, 1]], np.float32)
-        self.kalman_z.processNoiseCov = np.array([[1, 0],
-                                                 [0, 1]], np.float32) * 0.03
+        self.kalman_z.processNoiseCov = np.eye(2, dtype=np.float32) * 0.03
+        self.kalman_z.errorCovPre = np.eye(2, dtype=np.float32)
 
         # Initialize global variables
         self.smoothed_x, self.smoothed_y, self.smoothed_z = None, None, None
@@ -113,22 +113,29 @@ class FaceTracker:
             norm_y = -((y / h) * 2 - 1)
             norm_z = (distance - 30) / 100
 
-            # Update Kalman Filters
-            measured_x = np.array([[np.float32(norm_x)]])
-            self.kalman_x.correct(measured_x)
+            # Kalman Filter Update Sequence
+            if self.filtered_x is None:
+                # Initialize state if not done
+                self.kalman_x.statePre = np.array([[norm_x], [0]], dtype=np.float32)
+                self.kalman_y.statePre = np.array([[norm_y], [0]], dtype=np.float32)
+                self.kalman_z.statePre = np.array([[norm_z], [0]], dtype=np.float32)
+
+            # Predict
             pred_x = self.kalman_x.predict()
-            self.filtered_x = pred_x[0][0]  # Assign to instance variable
-
-            measured_y = np.array([[np.float32(norm_y)]])
-            self.kalman_y.correct(measured_y)
             pred_y = self.kalman_y.predict()
-            self.filtered_y = pred_y[0][0]  # Assign to instance variable
-
-            measured_z = np.array([[np.float32(norm_z)]])
-            self.kalman_z.correct(measured_z)
             pred_z = self.kalman_z.predict()
-            self.filtered_z = pred_z[0][0]  # Assign to instance variable
 
+            # Correct
+            self.kalman_x.correct(np.array([[np.float32(norm_x)]]))
+            self.kalman_y.correct(np.array([[np.float32(norm_y)]]))
+            self.kalman_z.correct(np.array([[np.float32(norm_z)]]))
+
+            # Retrieve filtered values
+            self.filtered_x = self.kalman_x.statePost[0][0]
+            self.filtered_y = self.kalman_y.statePost[0][0]
+            self.filtered_z = self.kalman_z.statePost[0][0]
+
+            # Send coordinates
             self.send_coordinates(self.filtered_x, self.filtered_y, self.filtered_z)
         self.frame_processed.set()
 

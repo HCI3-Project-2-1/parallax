@@ -7,7 +7,7 @@ var face_position = Vector3.ZERO  # Changed to Vector3
 @export var smoothing = 0.9
 @export var x_sensitivity = 6.0  # Adjust this to control how much the camera moves
 @export var y_sensitivity = 7.0  # Adjust this to control how much the camera moves
-@export var z_sensitivity = 4.3
+@export var z_sensitivity = 2.0
 
 # Fixed rotation target (the point the camera should always look at)
 @export var fixed_look_at = Vector3(0, 2, 0)  # Adjust this to set the fixed look-at point
@@ -26,11 +26,11 @@ var max_z_position = 20000.0
 @export var x_offset = -1
 @export var y_offset = 0
 @export var z_offset = 0
-@export var z_offset_on_arrival = 4
+@export var z_offset_on_arrival = 10
 
 # Change fixed angle or dynamic angle
 @export var look_at_fixed = true
-var gesture = 0
+
 func _ready():
 	var err = udp_server.listen(port)
 	if err != OK:
@@ -47,14 +47,13 @@ func _physics_process(delta):
 		var peer = udp_server.take_connection()
 		var packet = peer.get_packet()
 		var data = packet.get_string_from_utf8().split(",")
-
-		if data.size() == 4:
+		
+		if data.size() == 3:
 			# Validate and parse incoming data
 			var incoming_x = clamp(float(data[0]), min_x_position, max_x_position)
 			var incoming_y = clamp(float(data[1]), min_y_position, max_y_position)
 			var incoming_z = clamp(float(data[2]), min_z_position, max_z_position)
-			gesture =  bool(int(data[3]))
-			print(gesture)
+
 			# Apply offsets and sensitivities
 			var target_position = Vector3(
 				-incoming_x * x_sensitivity + x_offset,
@@ -69,7 +68,7 @@ func _physics_process(delta):
 	# Update the global position
 	global_position = new_global_position
 
-	if look_at_fixed || gesture:
+	if look_at_fixed:
 		# Use look_at_from_position instead of look_at
 		look_at(fixed_look_at)
 	#else:
