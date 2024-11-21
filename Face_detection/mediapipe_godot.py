@@ -4,7 +4,7 @@ import socket
 
 # Constants
 UDP_IP = "127.0.0.1"  # Godot listening on localhost
-UDP_PORT = 12345
+UDP_PORT = 13456
 ALPHA = 0.3  # Smoothing factor
 
 def smooth_coordinates(new_x, new_y, prev_x, prev_y, alpha):
@@ -69,7 +69,8 @@ def main():
 
                     # Send the normalized coordinates to Godot via UDP
                     message = f"{norm_x:.4f},{norm_y:.4f}"
-                    sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
+                    print(message) 
+                    # sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
 
                     # Draw annotations on the frame
                     mp_drawing.draw_detection(frame, detection)
