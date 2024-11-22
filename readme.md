@@ -7,8 +7,8 @@ This project integrates real-time face detection using Python with a Godot proje
 ## **Installation**
 
 ### **Prerequisites**
-- Python 3.8 or higher
-- Godot Engine 4.x
+- Python 3.12 or higher
+- Godot Engine 4.3
 - Pip (Python package manager)
 
 ---
@@ -19,12 +19,13 @@ This project integrates real-time face detection using Python with a Godot proje
 1. Navigate to the `face_detection` folder:
    ```bash
    cd face_detection
+   
 2. Install Python dependencies:
-
-pip install -r requirements.txt
+   ```bash
+    pip install -r requirements.txt
 
 3. Run the face detection system:
-
+   ```bash
     python main.py
 
 ### **Step 2: Godot Instance**
@@ -32,6 +33,6 @@ pip install -r requirements.txt
 1.  Open the godot_project folder in Godot:
 
     ```bash
-    godot godot_project/project.godot```
-
+    godot godot_project/project.godot
+    
 2. Run the project.
