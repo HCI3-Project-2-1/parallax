@@ -6,3 +6,4 @@
 ./godot_project/.export
 ./godot_project/.godot
 __pycache__
+/myenv
