@@ -113,7 +113,7 @@ def main():
         video_capture_thread.join()
         video_capture.release()
         cv2.destroyAllWindows()
-        socket.close()
+        network.socket.close()
 
         # TODO understand python locking mechanism
         with lock:
