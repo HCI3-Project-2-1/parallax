@@ -18,7 +18,7 @@ TOGGLE_OVERLAYS_KEY = "o"
 CYCLE_FRAME_SCALE_FACTOR_KEY = "s"
 QUIT_KEY = "q"
 
-MP_LANDMARKER_TASK = "./models/face_landmarker.task"
+MP_LANDMARKER_TASK = "Face_detection/models/face_landmarker.task"
 
 
 lock = threading.Lock()

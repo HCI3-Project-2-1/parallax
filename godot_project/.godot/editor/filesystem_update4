@@ -1,1 +1,6 @@
 res://main.tscn
+res://scenes/main.tscn
+res://scenes/tunnel.tscn
+res://scripts/main_camera.gd
+res://scripts/main_camera_scene2.gd
+res://scripts/ui.gd

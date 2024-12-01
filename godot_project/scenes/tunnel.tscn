@@ -1,0 +1,378 @@
+[gd_scene load_steps=28 format=3 uid="uid://byb86rs8yvbu2"]
+
+[ext_resource type="Script" path="res://scripts/main_camera_scene2.gd" id="1_dfo1s"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="2_tg6qm"]
+
+[sub_resource type="Environment" id="Environment_2a0ex"]
+background_mode = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gpdda"]
+albedo_color = Color(0.733333, 0.733333, 0.733333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6u38v"]
+albedo_color = Color(0.733333, 0.733333, 0.733333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rcgd6"]
+albedo_color = Color(0.666569, 0.666569, 0.666569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_108rc"]
+albedo_color = Color(0.666667, 0.666667, 0.666667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_80kwu"]
+albedo_color = Color(0.6, 0.6, 0.6, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rv4it"]
+albedo_color = Color(0.6, 0.6, 0.6, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g6osx"]
+albedo_color = Color(0.533333, 0.533333, 0.533333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3neim"]
+albedo_color = Color(0.533333, 0.533333, 0.533333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7y0ia"]
+albedo_color = Color(0.466667, 0.466667, 0.466667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_axbtn"]
+albedo_color = Color(0.466667, 0.466667, 0.466667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hitb"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5jfs2"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dtb6e"]
+albedo_color = Color(0.333333, 0.333333, 0.333333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dlc7c"]
+albedo_color = Color(0.333333, 0.333333, 0.333333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a1s0n"]
+albedo_color = Color(0.266667, 0.266667, 0.266667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6hwo3"]
+albedo_color = Color(0.266667, 0.266667, 0.266667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pqrto"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f8yt2"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xm0dv"]
+albedo_color = Color(0.133333, 0.133333, 0.133333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ew7fl"]
+albedo_color = Color(0.133333, 0.133333, 0.133333, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eksl8"]
+albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fnktx"]
+albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uthlf"]
+albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6m8ty"]
+albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99467, -0.103105, 0, 0.103105, 0.99467, 0.0773816, -0.446957, 5.46693)
+light_energy = 13.112
+light_indirect_energy = 14.45
+light_specular = 1.0
+shadow_enabled = true
+distance_fade_enabled = true
+distance_fade_begin = 0.0
+spot_range = 70.0
+spot_angle = 60.0
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99467, -0.103105, 0, 0.103105, 0.99467, -0.331214, -0.952996, 3.68579)
+light_energy = 16.0
+light_specular = 1.0
+distance_fade_enabled = true
+distance_fade_begin = 0.0
+spot_range = 70.0
+spot_angle = 60.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+projection = 2
+current = true
+fov = 37.5
+size = 0.001
+near = 0.001
+script = ExtResource("1_dfo1s")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2a0ex")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0295203, -0.698405, 19.3787)
+light_color = Color(0.973535, 0.973535, 0.973535, 1)
+light_energy = 16.0
+light_indirect_energy = 20.31
+light_volumetric_fog_energy = 15.65
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 10, 0, 2, -6.06994)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D"]
+size = Vector3(12, 7.8, 1.5)
+material = SubResource("StandardMaterial3D_gpdda")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D"]
+operation = 2
+snap = 1e-06
+size = Vector3(11.7, 7.5, 1.5)
+material = SubResource("StandardMaterial3D_6u38v")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+size = Vector3(11.7, 7.5, 1.5)
+material = SubResource("StandardMaterial3D_rcgd6")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D2"]
+operation = 2
+size = Vector3(11.4, 7.2, 1.5)
+material = SubResource("StandardMaterial3D_108rc")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.985409)
+size = Vector3(11.4, 7.2, 1.5)
+material = SubResource("StandardMaterial3D_80kwu")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D3"]
+operation = 2
+size = Vector3(11.1, 6.9, 1.5)
+material = SubResource("StandardMaterial3D_rv4it")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+size = Vector3(11.1, 6.9, 1.5)
+material = SubResource("StandardMaterial3D_g6osx")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D4"]
+operation = 2
+size = Vector3(10.8, 6.6, 1.5)
+material = SubResource("StandardMaterial3D_3neim")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+size = Vector3(10.8, 6.6, 1.5)
+material = SubResource("StandardMaterial3D_7y0ia")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D5"]
+operation = 2
+size = Vector3(10.5, 6.3, 1.5)
+material = SubResource("StandardMaterial3D_axbtn")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.5)
+size = Vector3(10.5, 6.3, 1.5)
+material = SubResource("StandardMaterial3D_5hitb")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D6"]
+operation = 2
+size = Vector3(10.2, 6, 1.5)
+material = SubResource("StandardMaterial3D_5jfs2")
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+size = Vector3(10.2, 6, 1.5)
+material = SubResource("StandardMaterial3D_dtb6e")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D7"]
+operation = 2
+size = Vector3(9.9, 5.7, 1.5)
+material = SubResource("StandardMaterial3D_dlc7c")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.5)
+size = Vector3(10.2, 5.7, 1.5)
+material = SubResource("StandardMaterial3D_a1s0n")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D8"]
+operation = 2
+size = Vector3(10.2, 5.4, 1.5)
+material = SubResource("StandardMaterial3D_6hwo3")
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.98209)
+size = Vector3(9.9, 5.4, 1.5)
+material = SubResource("StandardMaterial3D_pqrto")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D9"]
+operation = 2
+size = Vector3(9.3, 5.1, 1.5)
+material = SubResource("StandardMaterial3D_f8yt2")
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+size = Vector3(9.3, 5.1, 1.5)
+material = SubResource("StandardMaterial3D_xm0dv")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D10"]
+operation = 2
+size = Vector3(9, 4.8, 1.5)
+material = SubResource("StandardMaterial3D_ew7fl")
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+size = Vector3(9, 4.8, 1.5)
+material = SubResource("StandardMaterial3D_eksl8")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D11"]
+operation = 2
+size = Vector3(8.7, 4.5, 1.5)
+material = SubResource("StandardMaterial3D_fnktx")
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.5)
+size = Vector3(8.7, 4.5, 1.5)
+material = SubResource("StandardMaterial3D_uthlf")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Node3D/CSGBox3D12"]
+visible = false
+operation = 2
+size = Vector3(8.4, 4.2, 1.5)
+material = SubResource("StandardMaterial3D_6m8ty")
+
+[node name="ui" type="Control" parent="." node_paths=PackedStringArray("main_camera", "third_person_camera")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+script = ExtResource("2_tg6qm")
+main_camera = NodePath("../Camera3D")
+third_person_camera = NodePath("../Camera3D")
+
+[node name="delay_label" type="Label" parent="ui"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 17.0
+offset_right = 73.0
+offset_bottom = 40.0
+text = "foo ms"
+
+[node name="third_person_view_toggle" type="CheckButton" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 55.0
+offset_right = 230.0
+offset_bottom = 85.0
+theme_override_font_sizes/font_size = 15
+text = "third person view"
+
+[node name="camera_output_toggle" type="CheckButton" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 85.4136
+offset_right = 230.0
+offset_bottom = 115.414
+theme_override_font_sizes/font_size = 15
+text = "camera output canvas"
+
+[node name="fixed_angle_toggle" type="CheckButton" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 115.827
+offset_right = 230.0
+offset_bottom = 154.827
+theme_override_font_sizes/font_size = 22
+button_pressed = true
+text = "fixed angle"
+
+[node name="interpolation_toggle" type="CheckButton" parent="ui"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 155.0
+offset_right = 305.0
+offset_bottom = 186.0
+button_pressed = true
+text = "linear interpolation smoothing"
+
+[node name="main_camera_sensitivity_slider" type="HSlider" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 201.0
+offset_right = 230.0
+offset_bottom = 217.0
+tooltip_text = "Main Camera Sensivity"
+min_value = 10.0
+step = 5.0
+value = 25.0
+rounded = true
+tick_count = 10
+ticks_on_borders = true
+
+[node name="label" type="Label" parent="ui/main_camera_sensitivity_slider"]
+layout_mode = 2
+offset_top = 20.0
+offset_right = 338.0
+offset_bottom = 43.0
+text = "main camera sensitivity"
+
+[node name="main_camera_follow_speed_slider" type="HSlider" parent="ui"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 250.713
+offset_right = 230.0
+offset_bottom = 266.713
+min_value = 1.0
+max_value = 20.0
+value = 20.0
+tick_count = 10
+
+[node name="Label" type="Label" parent="ui/main_camera_follow_speed_slider"]
+layout_mode = 0
+offset_top = 20.0
+offset_right = 204.0
+offset_bottom = 43.0
+text = "main camera follow speed"
+
+[node name="third_person_camera_sensitivity_slider" type="HSlider" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 300.713
+offset_right = 230.0
+offset_bottom = 316.713
+tooltip_text = "Third Person Camera Sensivity"
+min_value = 10.0
+step = 5.0
+value = 50.0
+rounded = true
+tick_count = 10
+ticks_on_borders = true
+
+[node name="label" type="Label" parent="ui/third_person_camera_sensitivity_slider"]
+layout_mode = 2
+offset_top = 20.0
+offset_right = 338.0
+offset_bottom = 43.0
+text = "third person camera sensivity"
+
+[node name="fov_slider" type="HSlider" parent="ui"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 350.713
+offset_right = 230.0
+offset_bottom = 366.713
+min_value = 1.0
+max_value = 170.0
+value = 120.0
+rounded = true
+
+[node name="Label" type="Label" parent="ui/fov_slider"]
+layout_mode = 0
+offset_top = 20.0
+offset_right = 25.0
+offset_bottom = 43.0
+text = "fov"

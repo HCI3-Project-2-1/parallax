@@ -32,7 +32,6 @@ func _ready():
 
 	main_camera_sensitivity_slider.connect("value_changed", func(value): emit_signal("main_camera_sensitivity_changed", value))
 	main_camera_follow_speed_slider.connect("value_changed", func(value): emit_signal("main_camera_follow_speed_changed", value))
-	fov_slider.connect("value_changed", func(value): emit_signal("fov_changed", value))
 	
 	third_person_camera_sensitivity_slider.connect("value_changed", func(value): emit_signal("third_person_camera_sensitivity_changed", value))
 	

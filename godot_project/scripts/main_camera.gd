@@ -7,8 +7,8 @@ var delay_smoothing_factor = 0.1
 var smoothed_delay_ms = 0.0
 signal delay_updated(new_delay)
 
-var x_sensitivity = 25.0
-var y_sensitivity = 25.0
+var x_sensitivity = 10.0
+var y_sensitivity = 10.0
 var z_sensitivity = 2.0
 
 # distance from ground
@@ -27,7 +27,7 @@ var min_z_position = -20000.0
 var max_z_position = 20000.0
 
 var use_fixed_angle = true
-var use_interpolation = true
+var use_interpolation = false
 # camera position interpolation smoothness parameter
 var follow_speed = 20.0
 
