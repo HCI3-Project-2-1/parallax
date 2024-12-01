@@ -70,9 +70,12 @@ mesh = SubResource("PrismMesh_xc034")
 
 [node name="main_camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
+projection = 2
 current = true
 fov = 120.0
-near = 0.005
+size = 0.02
+near = 0.01
+far = 150.0
 script = ExtResource("4_bkmmq")
 
 [node name="Node3D" type="MeshInstance3D" parent="main_camera"]
