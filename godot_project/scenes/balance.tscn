@@ -1,0 +1,173 @@
+[gd_scene load_steps=19 format=3 uid="uid://dal8i6iis0rou"]
+
+[ext_resource type="Script" path="res://scripts/balance/platform.gd" id="1_ojway"]
+[ext_resource type="Texture2D" uid="uid://bk6n5koyyqvl" path="res://assests/textures/concrete_floor_worn_001_diff_1k.png" id="1_x4xq5"]
+[ext_resource type="Texture2D" uid="uid://ccbty7j1em3lm" path="res://assests/textures/concrete_floor_worn_001_nor_gl_1k.png" id="2_hvpub"]
+[ext_resource type="Texture2D" uid="uid://bgj2cxsv4nswx" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Color.png" id="2_i43gu"]
+[ext_resource type="Script" path="res://scripts/balance/game_manager.gd" id="2_jgqfg"]
+[ext_resource type="Texture2D" uid="uid://cb1f22ayxg2k5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_NormalDX.png" id="3_aosyg"]
+[ext_resource type="Texture2D" uid="uid://58u5iqsp0jb5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Roughness.png" id="4_tlfg2"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_x6r8e"]
+ground_color = Color(0.379897, 0.0837161, 0.643032, 1)
+
+[sub_resource type="Sky" id="Sky_rh5sj"]
+sky_material = SubResource("PhysicalSkyMaterial_x6r8e")
+
+[sub_resource type="Environment" id="Environment_4jm6n"]
+background_mode = 2
+sky = SubResource("Sky_rh5sj")
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_qkaqn"]
+bounce = 0.19
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bd5vd"]
+albedo_texture = ExtResource("1_x4xq5")
+normal_enabled = true
+normal_texture = ExtResource("2_hvpub")
+
+[sub_resource type="SphereMesh" id="SphereMesh_qqf6s"]
+material = SubResource("StandardMaterial3D_bd5vd")
+radius = 0.2
+height = 0.4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_7sx85"]
+radius = 0.2
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xd4j4"]
+friction = 0.05
+absorbent = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0mn35"]
+albedo_texture = ExtResource("2_i43gu")
+roughness_texture = ExtResource("4_tlfg2")
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.03
+normal_enabled = true
+normal_texture = ExtResource("3_aosyg")
+uv1_scale = Vector3(3, 3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_iai5v"]
+material = SubResource("StandardMaterial3D_0mn35")
+size = Vector3(2, 0.2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pxlxw"]
+size = Vector3(2, 0.2, 2)
+
+[node name="Balance" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4jm6n")
+
+[node name="Ball" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 11, 0)
+mass = 10.0
+physics_material_override = SubResource("PhysicsMaterial_qkaqn")
+
+[node name="BallMesh" type="MeshInstance3D" parent="Ball"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.98023e-08, 0)
+mesh = SubResource("SphereMesh_qqf6s")
+skeleton = NodePath("../../MainCam")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ball"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -2.98023e-08, 0)
+shape = SubResource("SphereShape3D_7sx85")
+
+[node name="MainCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 12, 3)
+projection = 2
+size = 0.078
+
+[node name="Platform" type="StaticBody3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 10, 0)
+physics_material_override = SubResource("PhysicsMaterial_xd4j4")
+script = ExtResource("1_ojway")
+
+[node name="PlatformMesh" type="MeshInstance3D" parent="Platform"]
+mesh = SubResource("BoxMesh_iai5v")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform"]
+shape = SubResource("BoxShape3D_pxlxw")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.868308, -0.19191, 0.457397, -0.491482, -0.457397, 0.741103, 0.0669873, -0.868308, -0.491482, 6, 19, -5)
+
+[node name="GameManager" type="Control" parent="." node_paths=PackedStringArray("ball", "platform", "respawn_button", "sensitivity_slider", "weight_slider", "start_button", "score_label", "timer_label")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_jgqfg")
+ball = NodePath("../Ball")
+platform = NodePath("../Platform")
+respawn_button = NodePath("CanvasLayer/GridContainer/RespawnButton")
+sensitivity_slider = NodePath("CanvasLayer/PlatformSensetivity")
+weight_slider = NodePath("CanvasLayer/BallWeight")
+start_button = NodePath("CanvasLayer/GridContainer/StartButton")
+score_label = NodePath("CanvasLayer/Score")
+timer_label = NodePath("CanvasLayer/Time")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="GameManager"]
+
+[node name="GridContainer" type="GridContainer" parent="GameManager/CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -184.0
+offset_right = 64.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 8
+size_flags_vertical = 8
+columns = 2
+
+[node name="RespawnButton" type="Button" parent="GameManager/CanvasLayer/GridContainer"]
+layout_mode = 2
+text = "Respawn"
+
+[node name="StartButton" type="Button" parent="GameManager/CanvasLayer/GridContainer"]
+layout_mode = 2
+text = "Start"
+
+[node name="PlatformSensetivity" type="HSlider" parent="GameManager/CanvasLayer"]
+offset_left = 48.0
+offset_top = 48.0
+offset_right = 243.0
+offset_bottom = 64.0
+min_value = 0.1
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="BallWeight" type="HSlider" parent="GameManager/CanvasLayer"]
+offset_left = 48.0
+offset_top = 112.0
+offset_right = 246.0
+offset_bottom = 128.0
+
+[node name="Score" type="Label" parent="GameManager/CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -72.0
+offset_top = 80.0
+offset_right = 72.0
+offset_bottom = 128.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+text = "Score"
+
+[node name="Time" type="Label" parent="GameManager/CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -184.0
+offset_top = 48.0
+offset_bottom = 112.0
+grow_horizontal = 0
+text = "Time"

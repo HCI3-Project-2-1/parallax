@@ -16,8 +16,7 @@ signal main_camera_sensitivity_changed(value)
 @onready var main_camera_follow_speed_slider = $main_camera_follow_speed_slider
 signal main_camera_follow_speed_changed(value)
 
-@onready var fov_slider = $fov_slider
-signal fov_changed(value)
+
 
 @onready var third_person_camera_sensitivity_slider = $third_person_camera_sensitivity_slider
 signal third_person_camera_sensitivity_changed(value)

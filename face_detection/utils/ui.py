@@ -10,6 +10,9 @@ ui_config = {
     "circle_radius": 4,
 }
 
+# Initialize window with NORMAL flag
+cv2.namedWindow(ui_config["frame_title"], cv2.WINDOW_NORMAL)
+
 def display_frame(shared_data, lock, frame, render_overlays=True):
     """Display the frame with annotations."""
     if not render_overlays:

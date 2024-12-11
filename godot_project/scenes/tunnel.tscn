@@ -92,7 +92,7 @@ spot_range = 70.0
 spot_angle = 60.0
 
 [node name="SpotLight3D2" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.99467, -0.103105, 0, 0.103105, 0.99467, -0.331214, -0.952996, 3.68579)
+transform = Transform3D(1, 0, 0, 0, 0.99467, -0.103105, 0, 0.103105, 0.99467, -0.331214, -0.952996, 8.68579)
 light_energy = 16.0
 light_specular = 1.0
 distance_fade_enabled = true
