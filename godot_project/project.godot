@@ -15,6 +15,10 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://icons/icon.png"
 
+[autoload]
+
+SceneManager="*res://addons/scene_manager/SceneManager.tscn"
+
 [display]
 
 window/size/viewport_width=1920
@@ -22,7 +26,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/simple_tool_button/plugin.cfg")
+enabled=PackedStringArray("res://addons/scene_manager/plugin.cfg", "res://addons/simple_tool_button/plugin.cfg")
 
 [filesystem]
 

@@ -1,7 +1,10 @@
-[gd_scene load_steps=28 format=3 uid="uid://byb86rs8yvbu2"]
+[gd_scene load_steps=31 format=3 uid="uid://byb86rs8yvbu2"]
 
 [ext_resource type="Script" path="res://scripts/main_camera_scene2.gd" id="1_dfo1s"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="2_tg6qm"]
+[ext_resource type="Script" path="res://scenes/menu_button.gd" id="3_f215b"]
+[ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="4_h1xly"]
+[ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="5_bakdl"]
 
 [sub_resource type="Environment" id="Environment_2a0ex"]
 background_mode = 1
@@ -376,3 +379,30 @@ offset_top = 20.0
 offset_right = 25.0
 offset_bottom = 43.0
 text = "fov"
+
+[node name="SceneManager" type="Control" parent="." node_paths=PackedStringArray("menu")]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_bottom = 64.0
+grow_horizontal = 0
+script = ExtResource("3_f215b")
+menu = NodePath("MenuButton")
+
+[node name="MenuButton" type="MenuButton" parent="SceneManager"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.167
+anchor_right = 0.167
+offset_left = -102.4
+offset_top = 14.0
+offset_right = 102.6
+offset_bottom = 64.0
+grow_horizontal = 0
+theme = ExtResource("4_h1xly")
+text = "Select scene"
+icon = ExtResource("5_bakdl")
+flat = false
+expand_icon = true

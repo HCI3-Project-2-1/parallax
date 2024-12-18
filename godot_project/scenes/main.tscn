@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://c73evq08u0jcb"]
+[gd_scene load_steps=23 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Script" path="res://scripts/third_person_camera.gd" id="1_3m1w1"]
 [ext_resource type="Script" path="res://scripts/main_camera.gd" id="2_o8ms2"]
@@ -7,6 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assests/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
 [ext_resource type="PackedScene" uid="uid://do6yslistk8je" path="res://icons/UM_Logo.gltf" id="6_u1nx5"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="7_pmcir"]
+[ext_resource type="Script" path="res://scenes/menu_button.gd" id="8_3br14"]
+[ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="9_cij8c"]
+[ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="9_l0cj0"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wtoqj"]
 albedo_color = Color(0.127821, 0.173184, 1, 1)
@@ -586,5 +589,32 @@ text = "third person camera sensivity:"
 
 [node name="Ground" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_lim4w")
+
+[node name="SceneManager" type="Control" parent="." node_paths=PackedStringArray("menu")]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_bottom = 64.0
+grow_horizontal = 0
+script = ExtResource("8_3br14")
+menu = NodePath("MenuButton")
+
+[node name="MenuButton" type="MenuButton" parent="SceneManager"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.167
+anchor_right = 0.167
+offset_left = -102.4
+offset_top = 14.0
+offset_right = 102.6
+offset_bottom = 64.0
+grow_horizontal = 0
+theme = ExtResource("9_l0cj0")
+text = "Select scene"
+icon = ExtResource("9_cij8c")
+flat = false
+expand_icon = true
 
 [connection signal="delay_updated" from="main_camera" to="ui" method="update_delay_label"]

@@ -1,4 +1,4 @@
-res://scenes/tunnel.tscn
-res://scenes/main.tscn
 res://scenes/balance.tscn
-res://scripts/balance/game_manager.gd
+res://shaders/theme.tres
+res://scenes/main.tscn
+res://scenes/tunnel.tscn
