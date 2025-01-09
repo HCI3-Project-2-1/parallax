@@ -7,15 +7,13 @@ var delay_smoothing_factor = 0.1
 var smoothed_delay_ms = 0.0
 signal delay_updated(new_delay)
 
-var x_sensitivity = 10.0
-var y_sensitivity = 10.0
-var z_sensitivity = 2.0
+var sensitivity = Vector3(10.0, 10.0, 2.0)
 
 # distance from ground
 var z_offset = 18
 
 # TODO where did we derive these values from ?
-var fixed_rotation_target = Vector3(0, 2, 0)
+var fixed_rotation_target = Vector3(0, 0, 0)
 
 var min_y_position = -20000.0
 var max_y_position = 20000.0
@@ -46,8 +44,7 @@ func _ready():
 		return
 		
 	ui_node.connect("main_camera_sensitivity_changed", func(value): 
-		x_sensitivity = value
-		y_sensitivity = value
+		sensitivity = value
 	)
 	
 	ui_node.connect("main_camera_follow_speed_changed", func(value): 
@@ -92,8 +89,8 @@ func _physics_process_udp(delta):
 		z_offset += 0.5
 		
 	var target_position = Vector3(
-		-received_x * x_sensitivity,
-		received_y * y_sensitivity,
+		received_x * sensitivity[0],
+		received_y * sensitivity[1],
 		z_offset
 	)
 	
@@ -109,18 +106,16 @@ func _physics_process_udp(delta):
 		
 		
 func update_position(data: Vector3) -> void:
-	var target_position = Vector3(
-		-data[0] * x_sensitivity,
-		data[1] * y_sensitivity,
-		z_offset
-	)
 	
 	#if use_interpolation:
 		## https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
 		## https://en.wikipedia.org/wiki/Linear_interpolation
 		#global_position = global_position.lerp(target_position, delta * follow_speed)
 	#else:
-	global_position = target_position
+	
+	var new_position = Vector3(data[0]*sensitivity[0],data[1]*sensitivity[1], z_offset)
+	
+	global_position = new_position
 
 	if use_fixed_angle:
 		look_at(fixed_rotation_target)

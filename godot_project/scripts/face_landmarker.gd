@@ -20,10 +20,15 @@ var LANDMARK_IDX = 1
 
 # for live video processing
 func _result_callback(result: MediaPipeFaceLandmarkerResult, image: MediaPipeImage, timestamp_ms: int) -> void:
-	var img := image.get_image()
+	if result.face_landmarks.is_empty():
+		return
 	# nose tip from first detected face
 	var nose_tip = result.face_landmarks[0].landmarks[LANDMARK_IDX]
-	camera_node.update_position()
+	var final_image = image.get_image()
+	camera_node.call_deferred("update_position", transform_landmark_coords(Vector3(nose_tip.x, nose_tip.y, nose_tip.z), Vector2(final_image.get_width(), final_image.get_height()), camera_node))
+	draw_mark_point(final_image, nose_tip)
+	update_camera_view(final_image)
+
 
 func init_task() -> void:
 	var base_options := MediaPipeTaskBaseOptions.new()
@@ -49,14 +54,27 @@ func process_video_frame(image: Image, timestamp_ms: int) -> void:
 func process_camera_frame(image: MediaPipeImage, timestamp_ms: int) -> void:
 	task.detect_async(image, timestamp_ms)
 
+func transform_landmark_coords(landmark: Vector3, image_size: Vector2, camera: Camera3D) -> Vector3:
+	var pixel_x = landmark.x * image_size.x
+	var pixel_y = landmark.y * image_size.y
+	
+	# transform from image coordinate system (top-left origin) 
+	# to screen coordinate system (center origin)
+	var ndc_x = (pixel_x / image_size.x) * 2.0 - 1.0
+	var ndc_y = -((pixel_y / image_size.y) * 2.0 - 1.0)
+	var min_depth = 0.5
+	var max_depth = 5.0
+	var depth = lerp(min_depth, max_depth, landmark.z)
+	
+	return Vector3(ndc_x, ndc_y, depth)
+
 func draw_mark_point(image: Image, landmark: MediaPipeNormalizedLandmark) -> void:
 	var color := Color.GREEN
-	var rect := Image.create(32, 32, false, image.get_format())
+	var rect := Image.create(8, 8, false, image.get_format())
 	rect.fill(color)
-	var image_size := Vector2(image.get_size())
 
 	var pos := Vector2(landmark.x, landmark.y)
-	image.blit_rect(rect, rect.get_used_rect(), Vector2i(image_size * pos) - rect.get_size() / 2)
+	image.blit_rect(rect, rect.get_used_rect(), Vector2i(Vector2(image.get_size()) * pos) - rect.get_size() / 2)
 
 func _ready():
 	load_video_button.pressed.connect(self._open_video)
