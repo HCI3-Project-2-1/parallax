@@ -1,15 +1,16 @@
-[gd_scene load_steps=23 format=3 uid="uid://c73evq08u0jcb"]
+[gd_scene load_steps=25 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Script" path="res://scripts/third_person_camera.gd" id="1_3m1w1"]
 [ext_resource type="Script" path="res://scripts/main_camera.gd" id="2_o8ms2"]
-[ext_resource type="Texture2D" uid="uid://di1plhdkug7pc" path="res://assests/textures/wooden_garage_door_diff_2k.png" id="3_xhy3j"]
-[ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://assests/textures/wooden_garage_door_nor_gl_2k.png" id="4_tkyfq"]
-[ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assests/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
+[ext_resource type="Texture2D" uid="uid://di1plhdkug7pc" path="res://assets/textures/wooden_garage_door_diff_2k.png" id="3_xhy3j"]
+[ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://assets/textures/wooden_garage_door_nor_gl_2k.png" id="4_tkyfq"]
+[ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assets/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
 [ext_resource type="PackedScene" uid="uid://do6yslistk8je" path="res://icons/UM_Logo.gltf" id="6_u1nx5"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="7_pmcir"]
 [ext_resource type="Script" path="res://scenes/menu_button.gd" id="8_3br14"]
 [ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="9_cij8c"]
 [ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="9_l0cj0"]
+[ext_resource type="Script" path="res://scripts/face_landmarker.gd" id="11_3r86c"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wtoqj"]
 albedo_color = Color(0.127821, 0.173184, 1, 1)
@@ -59,6 +60,8 @@ albedo_color = Color(0.62356, 0.62356, 0.62356, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_lim4w"]
 material = SubResource("StandardMaterial3D_q5s5a")
 size = Vector3(50, 50, 1)
+
+[sub_resource type="ImageTexture" id="ImageTexture_57oy7"]
 
 [node name="world" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 0)
@@ -616,5 +619,53 @@ text = "Select scene"
 icon = ExtResource("9_cij8c")
 flat = false
 expand_icon = true
+
+[node name="landmarker_task" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("11_3r86c")
+
+[node name="load_video_button" type="Button" parent="landmarker_task"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 345.0
+offset_right = 141.0
+offset_bottom = 376.0
+text = "load video"
+
+[node name="open_camera_button" type="Button" parent="landmarker_task"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 382.0
+offset_right = 141.0
+offset_bottom = 413.0
+text = "open camera"
+
+[node name="video_stream_player" type="VideoStreamPlayer" parent="landmarker_task"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="video_file_dialog" type="FileDialog" parent="landmarker_task"]
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="camera_permission_dialog" type="AcceptDialog" parent="landmarker_task"]
+
+[node name="camera_view" type="TextureRect" parent="landmarker_task"]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 438.0
+offset_right = 572.0
+offset_bottom = 738.0
+texture = SubResource("ImageTexture_57oy7")
+expand_mode = 1
+stretch_mode = 4
 
 [connection signal="delay_updated" from="main_camera" to="ui" method="update_delay_label"]
