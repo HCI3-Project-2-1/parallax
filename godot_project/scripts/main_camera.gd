@@ -35,10 +35,12 @@ func _ready():
 	var result = udp_server.listen(port)
 	if result != OK:
 		print("failed to listen on port ", port)
-		return
-	print("listening on port ", port)
+		print("assuming landmarker as gdextension")
+		#return
+	else:
+		print("listening on port ", port)
 	
-	var ui_node = get_node("/root/world/ui")
+	var ui_node = get_node("../ui")
 	if not ui_node:
 		print("ui node not found, ensure path is correct")
 		return
@@ -58,11 +60,9 @@ func _ready():
 	)
 
 # TODO _physics_process vs _process ?
-func _physics_process(delta):
-	# TODO do we even need this ?
+# called each engine tick
+func _physics_process_udp(delta):
 	udp_server.poll()
-
-	# TODO what does this do ?
 	if not udp_server.is_connection_available():
 		return
 		
@@ -90,7 +90,7 @@ func _physics_process(delta):
 		z_offset -= 0.5
 	if Input.is_action_pressed("move_backward"):
 		z_offset += 0.5
-
+		
 	var target_position = Vector3(
 		-received_x * x_sensitivity,
 		received_y * y_sensitivity,
@@ -103,6 +103,24 @@ func _physics_process(delta):
 		global_position = global_position.lerp(target_position, delta * follow_speed)
 	else:
 		global_position = target_position
+
+	if use_fixed_angle:
+		look_at(fixed_rotation_target)
+		
+		
+func update_position(data: Vector3) -> void:
+	var target_position = Vector3(
+		-data[0] * x_sensitivity,
+		data[1] * y_sensitivity,
+		z_offset
+	)
+	
+	#if use_interpolation:
+		## https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+		## https://en.wikipedia.org/wiki/Linear_interpolation
+		#global_position = global_position.lerp(target_position, delta * follow_speed)
+	#else:
+	global_position = target_position
 
 	if use_fixed_angle:
 		look_at(fixed_rotation_target)

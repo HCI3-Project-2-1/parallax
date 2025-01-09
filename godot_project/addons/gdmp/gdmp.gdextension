@@ -1,0 +1,16 @@
+[configuration]
+
+entry_symbol = "mediapipe_library_init"
+compatibility_minimum = 4.1
+
+[libraries]
+
+linux.x86_64 = "res://addons/gdmp/libs/libgdmp.linux.so"
+windows.x86_64 = "res://addons/gdmp/gdmp.windows.dll"
+
+[dependencies]
+
+windows.x86_64 = {
+    "res://addons/GDMP/libs/x86_64/opencv_world3410.dll": "",
+    "res://addons/GDMP/libs/x86_64/opencv_world3410d.dll": "",
+}
