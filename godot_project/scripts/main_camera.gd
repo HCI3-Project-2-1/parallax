@@ -7,7 +7,10 @@ var delay_smoothing_factor = 0.1
 var smoothed_delay_ms = 0.0
 signal delay_updated(new_delay)
 
-var sensitivity = Vector3(10.0, 10.0, 2.0)
+@onready
+var ui_node = $"../ui"
+
+var sensitivity = 10.0
 
 # distance from ground
 var z_offset = 18
@@ -30,15 +33,12 @@ var use_interpolation = false
 var follow_speed = 20.0
 
 func _ready():
-	var result = udp_server.listen(port)
-	if result != OK:
+	if udp_server.listen(port) != OK:
 		print("failed to listen on port ", port)
-		print("assuming landmarker as gdextension")
-		#return
+		return
 	else:
 		print("listening on port ", port)
 	
-	var ui_node = get_node("../ui")
 	if not ui_node:
 		print("ui node not found, ensure path is correct")
 		return
@@ -58,7 +58,7 @@ func _ready():
 
 # TODO _physics_process vs _process ?
 # called each engine tick
-func _physics_process_udp(delta):
+func _physics_process(delta):
 	udp_server.poll()
 	if not udp_server.is_connection_available():
 		return
@@ -89,8 +89,8 @@ func _physics_process_udp(delta):
 		z_offset += 0.5
 		
 	var target_position = Vector3(
-		received_x * sensitivity[0],
-		received_y * sensitivity[1],
+		received_x * sensitivity,
+		received_y * sensitivity,
 		z_offset
 	)
 	
@@ -106,16 +106,14 @@ func _physics_process_udp(delta):
 		
 		
 func update_position(data: Vector3) -> void:
+	var new_position = Vector3(data[0]*sensitivity,data[1]*sensitivity, z_offset)
 	
-	#if use_interpolation:
+	if use_interpolation:
 		## https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
 		## https://en.wikipedia.org/wiki/Linear_interpolation
-		#global_position = global_position.lerp(target_position, delta * follow_speed)
-	#else:
-	
-	var new_position = Vector3(data[0]*sensitivity[0],data[1]*sensitivity[1], z_offset)
-	
-	global_position = new_position
+		global_position = global_position.lerp(new_position, 0.016667 * follow_speed)
+	else:
+		global_position = new_position
 
 	if use_fixed_angle:
 		look_at(fixed_rotation_target)

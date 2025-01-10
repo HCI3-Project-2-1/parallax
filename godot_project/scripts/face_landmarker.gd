@@ -6,6 +6,7 @@ var delegate := MediaPipeTaskBaseOptions.DELEGATE_CPU
 var camera_helper := MediaPipeCameraHelper.new()
 var camera_resolution = Vector2(640, 480)
 
+@onready var transmission_start_time
 @onready var camera_node: Camera3D = $"../main_camera"
 @onready var camera_view: TextureRect = $camera_view
 @onready var video_player: VideoStreamPlayer = $video_stream_player
@@ -15,25 +16,69 @@ var camera_resolution = Vector2(640, 480)
 @onready var permission_dialog: AcceptDialog = $camera_permission_dialog
 
 var task: MediaPipeFaceLandmarker
-var task_file := "res://assets/face_landmarker.task"
+var TASK_FILE_PATH := "res://assets/face_landmarker.task"
+var log_file: FileAccess
+var PROCESSING_TIMES_FILE_PATH = "res://processing_times.txt"
 var LANDMARK_IDX = 1
+
+func _ready():
+	load_video_button.pressed.connect(self._open_video)
+	open_camera_button.pressed.connect(self._open_camera)
+	
+	video_file_dialog.file_selected.connect(self._load_video)
+	
+	camera_helper.permission_result.connect(self._permission_result)
+	camera_helper.new_frame.connect(self._camera_frame)
+	
+	log_file = FileAccess.open(PROCESSING_TIMES_FILE_PATH, FileAccess.WRITE_READ)
+	if not log_file:
+		print("failed to instantiate log file")
+	
+	init_task()
+
+func _process(delta: float) -> void:
+	if not video_player:
+		return
+	
+	if video_player.is_playing():
+		var texture := video_player.get_video_texture()
+		if texture:
+			var image := texture.get_image()
+			if image:
+				if not running_mode == MediaPipeTask.RUNNINE_MODE_VIDEO:
+					running_mode = MediaPipeTask.RUNNINE_MODE_VIDEO
+					init_task()
+				process_video_frame(image, Time.get_ticks_msec())
 
 # for live video processing
 func _result_callback(result: MediaPipeFaceLandmarkerResult, image: MediaPipeImage, timestamp_ms: int) -> void:
 	if result.face_landmarks.is_empty():
 		return
-	# nose tip from first detected face
-	var nose_tip = result.face_landmarks[0].landmarks[LANDMARK_IDX]
+	
+	var eye_midpoint = get_eye_midpoint_from_result(result)
+	
 	var final_image = image.get_image()
-	camera_node.call_deferred("update_position", transform_landmark_coords(Vector3(nose_tip.x, nose_tip.y, nose_tip.z), Vector2(final_image.get_width(), final_image.get_height()), camera_node))
-	draw_mark_point(final_image, nose_tip)
+	var godot_camera_coords = transform_landmark_coords(Vector3(eye_midpoint.x, eye_midpoint.y, eye_midpoint.z), Vector2(final_image.get_width(), final_image.get_height()), camera_node)
+	camera_node.call_deferred("update_position", godot_camera_coords)
+	draw_point(final_image, Vector2(eye_midpoint.x, eye_midpoint.y))
 	update_camera_view(final_image)
+
+func get_eye_midpoint_from_result(result: MediaPipeFaceLandmarkerResult) -> Vector3:
+	var first_face = result.face_landmarks[0]
+	var left_eye = first_face.landmarks[133]
+	var right_eye = first_face.landmarks[362]
+
+	var eye_midpoint_x = (left_eye.x + right_eye.x) / 2
+	var eye_midpoint_y = (left_eye.y + right_eye.y) / 2
+	var eye_z_mean = (left_eye.z + right_eye.z) / 2
+	
+	return Vector3(eye_midpoint_x, eye_midpoint_y, eye_z_mean)
 
 
 func init_task() -> void:
 	var base_options := MediaPipeTaskBaseOptions.new()
 	base_options.delegate = delegate
-	var file := FileAccess.open(task_file, FileAccess.READ)
+	var file := FileAccess.open(TASK_FILE_PATH, FileAccess.READ)
 	base_options.model_asset_buffer = file.get_buffer(file.get_length())
 	task = MediaPipeFaceLandmarker.new()
 	task.initialize(base_options, running_mode, 1, 0.5, 0.5, 0.5, true)
@@ -42,14 +87,22 @@ func init_task() -> void:
 func process_video_frame(image: Image, timestamp_ms: int) -> void:
 	var input_image := MediaPipeImage.new()
 	input_image.set_image(image)
-	var start_time = Time.get_ticks_msec()
+	var start_time = Time.get_ticks_usec()
 	var result := task.detect_video(input_image, timestamp_ms)
-	var end_time = Time.get_ticks_msec() - start_time
-	print("took ", end_time, "ms")
-	var nose_tip = result.face_landmarks[0].landmarks[LANDMARK_IDX]
-	camera_node.update_position(Vector3(nose_tip.x, nose_tip.y, nose_tip.z))
-	draw_mark_point(image, nose_tip)
+	var elapsed_time = Time.get_ticks_usec() - start_time
+	
+	print("took ", elapsed_time, "µs")
+	
+	var eye_midpoint = get_eye_midpoint_from_result(result)
+	var godot_camera_coords = transform_landmark_coords(Vector3(eye_midpoint.x, eye_midpoint.y, eye_midpoint.z), Vector2(image.get_width(), image.get_height()), camera_node)
+	camera_node.call_deferred("update_position", godot_camera_coords)
+	
+	log_file.seek_end()
+	log_file.store_line(str(elapsed_time))
+
+	draw_point(image, Vector2(eye_midpoint.x, eye_midpoint.y))
 	update_camera_view(image)
+
 
 func process_camera_frame(image: MediaPipeImage, timestamp_ms: int) -> void:
 	task.detect_async(image, timestamp_ms)
@@ -68,41 +121,12 @@ func transform_landmark_coords(landmark: Vector3, image_size: Vector2, camera: C
 	
 	return Vector3(ndc_x, ndc_y, depth)
 
-func draw_mark_point(image: Image, landmark: MediaPipeNormalizedLandmark) -> void:
+func draw_point(image: Image, screen_coords: Vector2) -> void:
 	var color := Color.GREEN
 	var rect := Image.create(8, 8, false, image.get_format())
 	rect.fill(color)
 
-	var pos := Vector2(landmark.x, landmark.y)
-	image.blit_rect(rect, rect.get_used_rect(), Vector2i(Vector2(image.get_size()) * pos) - rect.get_size() / 2)
-
-func _ready():
-	load_video_button.pressed.connect(self._open_video)
-	open_camera_button.pressed.connect(self._open_camera)
-	
-	video_file_dialog.file_selected.connect(self._load_video)
-	
-	camera_helper.permission_result.connect(self._permission_result)
-	camera_helper.new_frame.connect(self._camera_frame)
-	init_task()
-
-func _process(delta: float) -> void:
-	if not video_player:
-		return
-	
-	if video_player.is_playing():
-		var texture := video_player.get_video_texture()
-		if texture:
-			var image := texture.get_image()
-			if image:
-				if not running_mode == MediaPipeTask.RUNNINE_MODE_VIDEO:
-					running_mode = MediaPipeTask.RUNNINE_MODE_VIDEO
-					init_task()
-				process_video_frame(image, Time.get_ticks_msec())
-
-func _back() -> void:
-	reset()
-	get_tree().change_scene_to_packed(main_scene)
+	image.blit_rect(rect, rect.get_used_rect(), Vector2i(Vector2(image.get_size()) * screen_coords) - rect.get_size() / 2)
 
 func _open_video() -> void:
 	video_file_dialog.popup_centered_ratio()

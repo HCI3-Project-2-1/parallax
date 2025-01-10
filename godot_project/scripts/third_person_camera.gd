@@ -29,5 +29,3 @@ func _process(_delta):
 	var direction_to_look = main_camera.global_transform.basis.z.normalized()
 	var behind_position = main_camera.global_transform.origin + direction_to_look * distance_behind_main_camera 
 	global_transform.origin = behind_position
-	
-	look_at(main_camera.global_transform.origin)
