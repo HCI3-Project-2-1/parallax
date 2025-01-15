@@ -1,0 +1,39 @@
+[gd_scene load_steps=9 format=3 uid="uid://x770x1hpabk1"]
+
+[ext_resource type="Texture2D" uid="uid://bgj2cxsv4nswx" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Color.png" id="1_k6ydi"]
+[ext_resource type="Script" path="res://scripts/balance/platform.gd" id="1_mvoeu"]
+[ext_resource type="Texture2D" uid="uid://cb1f22ayxg2k5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_NormalDX.png" id="2_u0tbi"]
+[ext_resource type="Texture2D" uid="uid://58u5iqsp0jb5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Roughness.png" id="3_8ftf5"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xd4j4"]
+friction = 0.05
+absorbent = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0mn35"]
+albedo_texture = ExtResource("1_k6ydi")
+roughness_texture = ExtResource("3_8ftf5")
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.03
+normal_enabled = true
+normal_texture = ExtResource("2_u0tbi")
+uv1_scale = Vector3(3, 3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_iai5v"]
+material = SubResource("StandardMaterial3D_0mn35")
+size = Vector3(2, 0.2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pxlxw"]
+size = Vector3(2, 0.2, 2)
+
+[node name="Platform" type="StaticBody3D"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 10, 0)
+physics_material_override = SubResource("PhysicsMaterial_xd4j4")
+script = ExtResource("1_mvoeu")
+
+[node name="PlatformMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_iai5v")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_pxlxw")
