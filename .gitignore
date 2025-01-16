@@ -1,0 +1,9 @@
+.cache
+.idea
+.DS_store
+.venv
+./godot_project/.import
+./godot_project/.export
+./godot_project/.godot
+__pycache__
+/myenv
