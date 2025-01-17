@@ -31,9 +31,6 @@ var use_interpolation = false
 # camera position interpolation smoothness parameter
 var follow_speed = 20.0
 
-var log_file: FileAccess
-var PROCESSING_TIMES_FILE_PATH = "res://transmission_times.txt"
-
 func _ready():
 	var result = udp_server.listen(port)
 	if result != OK:
@@ -55,14 +52,6 @@ func _ready():
 		follow_speed = value
 		print(follow_speed)
 	)
-	
-	ui_node.connect("fov_changed", func(value): 
-		fov = value
-	)
-	
-	log_file = FileAccess.open(PROCESSING_TIMES_FILE_PATH, FileAccess.WRITE_READ)
-	if not log_file:
-		print("failed to instantiate log file")
 
 # TODO _physics_process vs _process ?
 func _physics_process(delta):
@@ -74,17 +63,10 @@ func _physics_process(delta):
 		return
 		
 	var data = udp_server.take_connection().get_packet().get_string_from_utf8().split(" ")
-	var transmission_time = (Time.get_unix_time_from_system() - float(data[0]))
 	
 	if not data.size() == 4:
 		print("unexpected received data format, check parsing logic")
 		return
-	
-	#log_file.seek_end()
-	# writing to disk is not working, perhaps its non blocking design allows it to be interrupted by a new
-	# _process() call in the meantime ? i assume this io operation takes longer than each game tick
-	#log_file.store_line(str(transmission_time))
-	#print(transmission_time)
 		
 	var current_time_ms = Time.get_ticks_msec()
 	if last_packet_time_ms > 0:
@@ -96,9 +78,9 @@ func _physics_process(delta):
 	
 	last_packet_time_ms = current_time_ms
 		
-	var received_x = clamp(float(data[0]), min_x_position, max_x_position)
-	var received_y = clamp(float(data[1]), min_y_position, max_y_position)
-	var received_z = clamp(float(data[2]), min_z_position, max_z_position)
+	var received_x = clamp(float(data[1]), min_x_position, max_x_position)
+	var received_y = clamp(float(data[2]), min_y_position, max_y_position)
+	var received_z = clamp(float(data[3]), min_z_position, max_z_position)
 
 	if Input.is_action_pressed("move_forward"):
 		z_offset -= 0.5

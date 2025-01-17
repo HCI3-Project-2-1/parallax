@@ -38,7 +38,7 @@ class FaceDetector:
         self.detector_options = mp.tasks.vision.FaceDetectorOptions(
             base_options=mp.tasks.BaseOptions(model_asset_path=face_detector_file),
             running_mode=mp.tasks.vision.RunningMode.IMAGE,
-            min_detection_confidence=0.7)
+            min_detection_confidence=0.5)
 
         self.mp_face_detector = mp.tasks.vision.FaceDetector
 
@@ -112,7 +112,7 @@ class FaceDetector:
             print("no face detected")
             return
         
-        (eye_midpoint_x, eye_midpoint_y) = utils.extract_eye_midpoint(results.detections[0], frame.shape)
+        (eye_midpoint_x, eye_midpoint_y) = utils.extract_eye_midpoint_from_detection(results.detections[0], frame.shape)
         
         self.state.image_x = eye_midpoint_x
         self.state.image_y = eye_midpoint_y
@@ -121,7 +121,6 @@ class FaceDetector:
 
         self.state.godot_x = godot_x
         self.state.godot_y = godot_y
-
 
     def handle_key_event(self, key: str):
         if key == 'o':

@@ -83,14 +83,19 @@ class FaceLandmarker:
                         if frame is None:
                             print("no frame available")
                             continue
-                        start_time = time.time()
+                        
                         self._process_frame(frame, landmarker)
-                        self.state.avg_fps = 1.0 / (time.time() - start_time)
+
                         if self.ui_config.show_overlay:
                             ui.draw_overlay(self, frame)
                         cv2.imshow(self.ui_config.frame_title, frame)
+
+                        if self.frame_delay_secs:
+                            time.sleep(self.frame_delay_secs)
+
                         if self.udp_receiver_ip and self.udp_receiver_port:
                             utils.send_udp_data(self.udp_receiver_ip, self.udp_receiver_port, (self.state.godot_x, self.state.godot_y, self.state.estimated_z))
+
                         key = cv2.waitKey(1) & 0xFF
                         if key != 255:
                             self.handle_key_event(chr(key))
@@ -101,17 +106,33 @@ class FaceLandmarker:
     def _process_frame(self, frame, landmarker=None):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-        if landmarker:
+        
+        if not landmarker:
+            print("no detector provided")
+            return
+
+        if self.video_file:    
             start_time = time.time()
             results = landmarker.detect(mp_image)
             exec_time_us = int((time.time() - start_time) * 1_000_000)
-            with open(self.log_file, 'w') as f:
+            with open(self.log_file, 'a') as f:
                 f.write(f"{exec_time_us}\n")
         else:
-            with mp.tasks.vision.FaceLandmarker.create_from_options(self.landmarker_options) as temp_landmarker:
-                results = temp_landmarker.detect(mp_image)
-        if results.face_landmarks:
-            utils.transform_landmark_coords(self, results.face_landmarks[0], frame.shape[:2])
+            results = landmarker.detect(mp_image)
+
+        if not results.face_landmarks:
+            print("no face detected")
+            return
+        
+        (eye_midpoint_x, eye_midpoint_y) = utils.extract_eye_midpoint_from_landmarks(results.face_landmarks[0], frame.shape)
+        
+        self.state.image_x = eye_midpoint_x
+        self.state.image_y = eye_midpoint_y
+        
+        (godot_x, godot_y) = utils.transform_to_godot_coords(eye_midpoint_x, eye_midpoint_y, frame.shape)
+
+        self.state.godot_x = godot_x
+        self.state.godot_y = godot_y
     
     def handle_key_event(self, key: str):
         if key == 'o':

@@ -52,10 +52,6 @@ func _ready():
 		follow_speed = value
 		print(follow_speed)
 	)
-	
-	ui_node.connect("fov_changed", func(value): 
-		fov = value
-	)
 
 # TODO _physics_process vs _process ?
 func _physics_process(delta):
@@ -68,7 +64,7 @@ func _physics_process(delta):
 		
 	var data = udp_server.take_connection().get_packet().get_string_from_utf8().split(" ")
 	
-	if not data.size() == 3:
+	if not data.size() == 4:
 		print("unexpected received data format, check parsing logic")
 		return
 		
@@ -82,9 +78,9 @@ func _physics_process(delta):
 	
 	last_packet_time_ms = current_time_ms
 		
-	var received_x = clamp(float(data[0]), min_x_position, max_x_position)
-	var received_y = clamp(float(data[1]), min_y_position, max_y_position)
-	var received_z = clamp(float(data[2]), min_z_position, max_z_position)
+	var received_x = clamp(float(data[1]), min_x_position, max_x_position)
+	var received_y = clamp(float(data[2]), min_y_position, max_y_position)
+	var received_z = clamp(float(data[3]), min_z_position, max_z_position)
 
 	if Input.is_action_pressed("move_forward"):
 		z_offset -= 0.5

@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://c73evq08u0jcb"]
+[gd_scene load_steps=29 format=3 uid="uid://c73evq08u0jcb"]
 
 [ext_resource type="Script" path="res://scripts/third_person_camera.gd" id="1_3m1w1"]
 [ext_resource type="Script" path="res://scripts/main_camera.gd" id="2_o8ms2"]
@@ -6,10 +6,25 @@
 [ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://assests/textures/wooden_garage_door_nor_gl_2k.png" id="4_tkyfq"]
 [ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assests/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
 [ext_resource type="PackedScene" uid="uid://do6yslistk8je" path="res://icons/UM_Logo.gltf" id="6_u1nx5"]
-[ext_resource type="Script" path="res://scripts/ui.gd" id="7_pmcir"]
-[ext_resource type="Script" path="res://scenes/menu_button.gd" id="8_3br14"]
+[ext_resource type="Script" path="res://ui.gd" id="7_pmcir"]
 [ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="9_cij8c"]
 [ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="9_l0cj0"]
+[ext_resource type="Script" path="res://scenes/menu_button.gd" id="10_xbkrl"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_r4jrs"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_u44b2"]
+sky_material = SubResource("ProceduralSkyMaterial_r4jrs")
+
+[sub_resource type="Environment" id="Environment_h3e84"]
+background_mode = 1
+background_color = Color(0, 0.0862745, 0.156863, 1)
+sky = SubResource("Sky_u44b2")
+tonemap_mode = 2
+sdfgi_enabled = true
+glow_enabled = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wtoqj"]
 albedo_color = Color(0.127821, 0.173184, 1, 1)
@@ -53,8 +68,17 @@ size = Vector3(2, 10, 2)
 material = SubResource("StandardMaterial3D_8g8fw")
 size = Vector3(2, 25, 2)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fhlde"]
+bg_color = Color(0.277528, 0.277528, 0.277528, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_17qwy"]
+bg_color = Color(0.162065, 0.162066, 0.162065, 1)
+
+[sub_resource type="Theme" id="Theme_6inch"]
+default_font_size = 40
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q5s5a"]
-albedo_color = Color(0.62356, 0.62356, 0.62356, 1)
+albedo_color = Color(0, 0.0843923, 0.158351, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_lim4w"]
 material = SubResource("StandardMaterial3D_q5s5a")
@@ -62,6 +86,9 @@ size = Vector3(50, 50, 1)
 
 [node name="world" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_h3e84")
 
 [node name="light_source" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.619779, -0.784776, 0, 0.784776, 0.619779, -50, 0, 120)
@@ -77,21 +104,6 @@ script = ExtResource("1_3m1w1")
 main_camera = NodePath("../main_camera")
 
 [node name="Node3D" type="MeshInstance3D" parent="third_person_camera"]
-transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("PrismMesh_xc034")
-
-[node name="main_camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 21.88)
-doppler_tracking = 2
-projection = 2
-current = true
-fov = 120.0
-size = 0.02
-near = 0.01
-far = 150.0
-script = ExtResource("2_o8ms2")
-
-[node name="Node3D" type="MeshInstance3D" parent="main_camera"]
 transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("PrismMesh_xc034")
 
@@ -472,149 +484,201 @@ skeleton = NodePath("../../../..")
 [node name="um_logo" parent="." instance=ExtResource("6_u1nx5")]
 transform = Transform3D(0.5, 0, 0, 0, -8.74228e-08, -0.5, 0, 2, -2.18557e-08, 0, -13, 1)
 
-[node name="ui" type="Control" parent="." node_paths=PackedStringArray("main_camera", "third_person_camera")]
+[node name="main_camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 21.88)
+doppler_tracking = 2
+projection = 2
+current = true
+fov = 120.0
+size = 0.02
+near = 0.01
+far = 150.0
+script = ExtResource("2_o8ms2")
+
+[node name="Node3D" type="MeshInstance3D" parent="main_camera"]
+transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, 1, 1.91069e-15, 4.37114e-08, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("PrismMesh_xc034")
+
+[node name="ui" type="Control" parent="." node_paths=PackedStringArray("main_camera", "third_person_camera", "delay_label", "third_person_view_toggle", "fixed_angle_toggle", "interpolation_toggle", "settings_visibility_toggle", "settings_container", "settings_panel", "menu_button", "guide_button", "guide_panel", "guide_text", "opaque_panel", "main_camera_sensitivity_slider", "main_camera_follow_speed_slider")]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_stretch_ratio = 0.0
 script = ExtResource("7_pmcir")
 main_camera = NodePath("../main_camera")
 third_person_camera = NodePath("../third_person_camera")
+delay_label = NodePath("delay_label")
+third_person_view_toggle = NodePath("SettingsPanel/SettingsContainer/third_person_view_toggle")
+fixed_angle_toggle = NodePath("SettingsPanel/SettingsContainer/fixed_angle_toggle")
+interpolation_toggle = NodePath("SettingsPanel/SettingsContainer/interpolation_toggle")
+settings_visibility_toggle = NodePath("SettingsPanel/SettingsVisibilityToggle")
+settings_container = NodePath("SettingsPanel/SettingsContainer")
+settings_panel = NodePath("SettingsPanel")
+menu_button = NodePath("MenuButton")
+guide_button = NodePath("GuideButton")
+guide_panel = NodePath("GuidePanel")
+guide_text = NodePath("GuideText")
+opaque_panel = NodePath("OpaquePanel")
+main_camera_sensitivity_slider = NodePath("SettingsPanel/SettingsContainer/main_camera_sensitivity_slider/main_camera_sensitivity_slider")
+main_camera_follow_speed_slider = NodePath("SettingsPanel/SettingsContainer/main_camera_follow_speed_slider/main_camera_follow_speed_slider")
 
 [node name="delay_label" type="Label" parent="ui"]
-layout_mode = 0
-offset_left = 27.0
-offset_top = 18.0
-offset_right = 80.0
-offset_bottom = 41.0
+visible = false
+layout_mode = 2
+offset_left = 120.0
+offset_top = 24.0
+offset_right = 173.0
+offset_bottom = 48.0
 text = "foo ms"
 
-[node name="third_person_view_toggle" type="CheckButton" parent="ui"]
-layout_mode = 2
+[node name="OpaquePanel" type="Panel" parent="ui"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fhlde")
+
+[node name="SettingsPanel" type="VBoxContainer" parent="ui"]
+layout_mode = 1
 offset_left = 20.0
-offset_top = 55.0
-offset_right = 230.0
-offset_bottom = 85.0
+offset_top = 20.0
+offset_right = 305.001
+offset_bottom = 515.001
+scale = Vector2(2, 2)
+theme_override_constants/separation = 0
+
+[node name="SettingsVisibilityToggle" type="CheckButton" parent="ui/SettingsPanel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="SettingsContainer" type="VBoxContainer" parent="ui/SettingsPanel"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_constants/separation = 27
+
+[node name="third_person_view_toggle" type="CheckButton" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "third person view"
 
-[node name="camera_output_toggle" type="CheckButton" parent="ui"]
+[node name="fixed_angle_toggle" type="CheckButton" parent="ui/SettingsPanel/SettingsContainer"]
 layout_mode = 2
-offset_left = 20.0
-offset_top = 85.4136
-offset_right = 230.0
-offset_bottom = 115.414
-theme_override_font_sizes/font_size = 15
-text = "camera output canvas"
-
-[node name="fixed_angle_toggle" type="CheckButton" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 115.827
-offset_right = 230.0
-offset_bottom = 154.827
 theme_override_font_sizes/font_size = 22
 button_pressed = true
 text = "fixed angle"
 
-[node name="interpolation_toggle" type="CheckButton" parent="ui"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 155.0
-offset_right = 305.0
-offset_bottom = 186.0
+[node name="interpolation_toggle" type="CheckButton" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
 text = "linear interpolation smoothing"
 
-[node name="main_camera_sensitivity_slider" type="HSlider" parent="ui"]
+[node name="main_camera_sensitivity_slider" type="VBoxContainer" parent="ui/SettingsPanel/SettingsContainer"]
 layout_mode = 2
-offset_left = 27.0
-offset_top = 213.0
-offset_right = 237.0
-offset_bottom = 229.0
+
+[node name="label" type="Label" parent="ui/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
+text = "main camera sensitivity:"
+
+[node name="main_camera_sensitivity_slider" type="HSlider" parent="ui/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
 tooltip_text = "Main Camera Sensivity"
 min_value = 10.0
 step = 5.0
 value = 25.0
 rounded = true
-tick_count = 10
 ticks_on_borders = true
 
-[node name="label" type="Label" parent="ui/main_camera_sensitivity_slider"]
+[node name="main_camera_follow_speed_slider" type="VBoxContainer" parent="ui/SettingsPanel/SettingsContainer"]
 layout_mode = 2
-offset_top = -27.0
-offset_right = 338.0
-offset_bottom = -4.0
-text = "main camera sensitivity:"
 
-[node name="main_camera_follow_speed_slider" type="HSlider" parent="ui"]
-layout_mode = 0
-offset_left = 27.0
-offset_top = 252.0
-offset_right = 237.0
-offset_bottom = 268.0
+[node name="Label" type="Label" parent="ui/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
+text = "main camera follow speed:"
+
+[node name="main_camera_follow_speed_slider" type="HSlider" parent="ui/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
 min_value = 1.0
 max_value = 20.0
 value = 20.0
-tick_count = 10
-
-[node name="Label" type="Label" parent="ui/main_camera_follow_speed_slider"]
-layout_mode = 0
-offset_top = -23.0
-offset_right = 204.0
-text = "main camera follow speed:"
-
-[node name="third_person_camera_sensitivity_slider" type="HSlider" parent="ui"]
-layout_mode = 2
-offset_left = 27.0
-offset_top = 301.0
-offset_right = 237.0
-offset_bottom = 317.0
-tooltip_text = "Third Person Camera Sensivity"
-min_value = 10.0
-step = 5.0
-value = 50.0
-rounded = true
-tick_count = 10
 ticks_on_borders = true
 
-[node name="label" type="Label" parent="ui/third_person_camera_sensitivity_slider"]
-layout_mode = 2
-offset_top = -22.713
-offset_right = 338.0
-offset_bottom = 0.286987
-text = "third person camera sensivity:"
-
-[node name="Ground" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_lim4w")
-
-[node name="SceneManager" type="Control" parent="." node_paths=PackedStringArray("menu")]
-layout_mode = 3
+[node name="MenuButton" type="MenuButton" parent="ui" node_paths=PackedStringArray("menu")]
+layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
-offset_bottom = 64.0
-grow_horizontal = 0
-script = ExtResource("8_3br14")
-menu = NodePath("MenuButton")
-
-[node name="MenuButton" type="MenuButton" parent="SceneManager"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.167
-anchor_right = 0.167
-offset_left = -102.4
-offset_top = 14.0
-offset_right = 102.6
-offset_bottom = 64.0
+offset_left = -270.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 70.0
 grow_horizontal = 0
 theme = ExtResource("9_l0cj0")
 text = "Select scene"
 icon = ExtResource("9_cij8c")
 flat = false
 expand_icon = true
+script = ExtResource("10_xbkrl")
+menu = NodePath(".")
+
+[node name="GuidePanel" type="Panel" parent="ui"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_17qwy")
+
+[node name="GuideText" type="Label" parent="ui"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -856.0
+offset_top = -276.0
+offset_right = 857.0
+offset_bottom = 276.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_6inch")
+text = "Getting started:
+
+- Center your face in the frame using the python viewfinder
+- Use the \"Select Scene\" button to change scenes
+- Check the button at the top left of the screen to view and change scene specific settings"
+
+[node name="GuideButton" type="Button" parent="ui"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -400.0
+offset_top = 20.0
+offset_right = -300.0
+offset_bottom = 70.0
+grow_horizontal = 0
+text = "GUIDE"
+
+[node name="Control" type="Control" parent="ui"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_lim4w")
 
 [connection signal="delay_updated" from="main_camera" to="ui" method="update_delay_label"]

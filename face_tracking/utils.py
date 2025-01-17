@@ -38,7 +38,20 @@ def transform_landmark_coords(self, landmarks, image_dimensions):
     self.state.y = normalized_y
     self.state.z = z_mean
 
-def extract_eye_midpoint(face_detection, frame_dimensions):
+def extract_eye_midpoint_from_landmarks(landmarks, frame_dimensions):
+    """Compute eye midpoint from detected face."""
+    left_eye = landmarks[133]
+    right_eye = landmarks[362]
+
+    eye_midpoint_x = (left_eye.x + right_eye.x) / 2
+    eye_midpoint_y = (left_eye.y + right_eye.y) / 2
+
+    eye_midpoint_x = int(eye_midpoint_x * frame_dimensions[1])
+    eye_midpoint_y = int(eye_midpoint_y * frame_dimensions[0])
+
+    return (eye_midpoint_x, eye_midpoint_y)
+
+def extract_eye_midpoint_from_detection(face_detection, frame_dimensions):
     """Compute eye midpoint from detected face."""
     left_eye_keypoint = face_detection.keypoints[0]
     right_eye_keypoint = face_detection.keypoints[1]

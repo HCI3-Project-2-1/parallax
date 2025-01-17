@@ -1,16 +1,30 @@
-[gd_scene load_steps=34 format=3 uid="uid://dal8i6iis0rou"]
+[gd_scene load_steps=38 format=3 uid="uid://dal8i6iis0rou"]
 
 [ext_resource type="Script" path="res://scripts/balance/platform.gd" id="1_ojway"]
-[ext_resource type="Texture2D" path="res://assests/textures/concrete_floor_worn_001_diff_1k.png" id="1_x4xq5"]
-[ext_resource type="Texture2D" path="res://assests/textures/concrete_floor_worn_001_nor_gl_1k.png" id="2_hvpub"]
-[ext_resource type="Texture2D" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Color.png" id="2_i43gu"]
-[ext_resource type="Script" path="res://scripts/balance/game_manager.gd" id="2_jgqfg"]
-[ext_resource type="Texture2D" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_NormalDX.png" id="3_aosyg"]
-[ext_resource type="Texture2D" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Roughness.png" id="4_tlfg2"]
-[ext_resource type="AudioStream" path="res://assests/sound/elegant.mp3" id="8_7kfcx"]
+[ext_resource type="Texture2D" uid="uid://bk6n5koyyqvl" path="res://assests/textures/concrete_floor_worn_001_diff_1k.png" id="1_x4xq5"]
+[ext_resource type="Texture2D" uid="uid://ccbty7j1em3lm" path="res://assests/textures/concrete_floor_worn_001_nor_gl_1k.png" id="2_hvpub"]
+[ext_resource type="Texture2D" uid="uid://bgj2cxsv4nswx" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Color.png" id="2_i43gu"]
+[ext_resource type="Script" path="res://game_manager.gd" id="2_jgqfg"]
+[ext_resource type="Texture2D" uid="uid://cb1f22ayxg2k5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_NormalDX.png" id="3_aosyg"]
+[ext_resource type="Texture2D" uid="uid://58u5iqsp0jb5" path="res://assests/textures/Tiles107_1K-PNG/Tiles107_1K-PNG_Roughness.png" id="4_tlfg2"]
+[ext_resource type="AudioStream" uid="uid://b18yy6othndc0" path="res://assests/sound/elegant.mp3" id="8_7kfcx"]
 [ext_resource type="Script" path="res://scenes/menu_button.gd" id="8_p7nm3"]
 [ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="9_na70g"]
 [ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="9_vnlfk"]
+
+[sub_resource type="GDScript" id="GDScript_s12ny"]
+script/source = "extends Node3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_x6r8e"]
 ground_color = Color(0.379897, 0.0837161, 0.643032, 1)
@@ -102,10 +116,20 @@ size = Vector3(2, 0.2, 2)
 [sub_resource type="BoxShape3D" id="BoxShape3D_pxlxw"]
 size = Vector3(2, 0.2, 2)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_25dm8"]
+bg_color = Color(0.277528, 0.277528, 0.277528, 1)
+
 [sub_resource type="Theme" id="Theme_jvner"]
 Button/font_sizes/font_size = 24
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m0q4e"]
+bg_color = Color(0.162065, 0.162066, 0.162065, 1)
+
+[sub_resource type="Theme" id="Theme_axvkc"]
+default_font_size = 40
+
 [node name="Balance" type="Node3D"]
+script = SubResource("GDScript_s12ny")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_4jm6n")
@@ -167,7 +191,7 @@ shape = SubResource("BoxShape3D_pxlxw")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.868308, -0.19191, 0.457397, -0.491482, -0.457397, 0.741103, 0.0669873, -0.868308, -0.491482, 6, 19, -5)
 
-[node name="GameManager" type="Control" parent="." node_paths=PackedStringArray("ball", "platform", "ground_detector", "start_button", "stop_button", "respawn_button", "score_label", "timer_label", "sensitivity_slider", "shrink_slider", "sensitivity_label", "shrink_label", "explosion_particles", "sound_effect")]
+[node name="GameManager" type="Control" parent="." node_paths=PackedStringArray("ball", "platform", "ground_detector", "start_button", "stop_button", "respawn_button", "score_label", "timer_label", "opaque_panel", "menu_button", "guide_button", "guide_panel", "guide_text", "settings_visibility_toggle", "settings_container", "settings_panel", "score_time_container", "sensitivity_slider", "shrink_slider", "sensitivity_label", "shrink_label", "explosion_particles", "sound_effect")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -178,29 +202,142 @@ script = ExtResource("2_jgqfg")
 ball = NodePath("../Ball")
 platform = NodePath("../Platform")
 ground_detector = NodePath("../MeshInstance3D/Ground")
-start_button = NodePath("GridContainer/StartButton")
-stop_button = NodePath("GridContainer/StopButton")
-respawn_button = NodePath("GridContainer/RespawnButton")
+start_button = NodePath("StartStopContainer/StartButton")
+stop_button = NodePath("StartStopContainer/StopButton")
+respawn_button = NodePath("StartStopContainer/RespawnButton")
 score_label = NodePath("Score")
 timer_label = NodePath("Time")
-sensitivity_slider = NodePath("VBoxContainer/PlatformSensetivity")
-shrink_slider = NodePath("VBoxContainer/ShrinkRate")
-sensitivity_label = NodePath("VBoxContainer/PlantformSensitivityLabel")
-shrink_label = NodePath("VBoxContainer/ShrinkLabel")
+opaque_panel = NodePath("OpaquePanel")
+menu_button = NodePath("MenuButton")
+guide_button = NodePath("GuideButton")
+guide_panel = NodePath("GuidePanel")
+guide_text = NodePath("GuideText")
+settings_visibility_toggle = NodePath("SettingsPanel/SettingsVisibilityToggle")
+settings_container = NodePath("SettingsPanel/SettingsContainer")
+settings_panel = NodePath("SettingsPanel")
+score_time_container = NodePath("StartStopContainer")
+sensitivity_slider = NodePath("SettingsPanel/SettingsContainer/platform_sensitivity_slider/PlatformSensetivity")
+shrink_slider = NodePath("SettingsPanel/SettingsContainer/shrink_rate/ShrinkRate")
+sensitivity_label = NodePath("SettingsPanel/SettingsContainer/platform_sensitivity_slider/PlantformSensitivityLabel")
+shrink_label = NodePath("SettingsPanel/SettingsContainer/shrink_rate/ShrinkLabel")
 explosion_particles = NodePath("../explosion")
 sound_effect = NodePath("../AudioStreamPlayer3D")
-metadata/_edit_use_anchors_ = true
 
-[node name="GridContainer" type="GridContainer" parent="GameManager"]
+[node name="OpaquePanel" type="Panel" parent="GameManager"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_25dm8")
+
+[node name="SettingsPanel" type="VBoxContainer" parent="GameManager"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 305.001
+offset_bottom = 515.0
+scale = Vector2(2, 2)
+theme_override_constants/separation = 0
+
+[node name="SettingsVisibilityToggle" type="CheckButton" parent="GameManager/SettingsPanel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="SettingsContainer" type="VBoxContainer" parent="GameManager/SettingsPanel"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_constants/separation = 27
+
+[node name="third_person_view_toggle" type="CheckButton" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "third person view"
+
+[node name="fixed_angle_toggle" type="CheckButton" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+button_pressed = true
+text = "fixed angle"
+
+[node name="interpolation_toggle" type="CheckButton" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+text = "linear interpolation smoothing"
+
+[node name="main_camera_sensitivity_slider" type="VBoxContainer" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="label" type="Label" parent="GameManager/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
+text = "main camera sensitivity:"
+
+[node name="main_camera_sensitivity_slider" type="HSlider" parent="GameManager/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
+tooltip_text = "Main Camera Sensivity"
+min_value = 10.0
+step = 5.0
+value = 25.0
+rounded = true
+ticks_on_borders = true
+
+[node name="main_camera_follow_speed_slider" type="VBoxContainer" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="GameManager/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
+text = "main camera follow speed:"
+
+[node name="main_camera_follow_speed_slider" type="HSlider" parent="GameManager/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
+min_value = 1.0
+max_value = 20.0
+value = 20.0
+ticks_on_borders = true
+
+[node name="platform_sensitivity_slider" type="VBoxContainer" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="PlantformSensitivityLabel" type="Label" parent="GameManager/SettingsPanel/SettingsContainer/platform_sensitivity_slider"]
+layout_mode = 2
+text = "Sensitivity"
+
+[node name="PlatformSensetivity" type="HSlider" parent="GameManager/SettingsPanel/SettingsContainer/platform_sensitivity_slider"]
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="shrink_rate" type="VBoxContainer" parent="GameManager/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="ShrinkLabel" type="Label" parent="GameManager/SettingsPanel/SettingsContainer/shrink_rate"]
+layout_mode = 2
+text = "Shrink rate"
+
+[node name="ShrinkRate" type="HSlider" parent="GameManager/SettingsPanel/SettingsContainer/shrink_rate"]
+layout_mode = 2
+min_value = 0.95
+max_value = 1.0
+step = 0.01
+value = 0.95
+
+[node name="StartStopContainer" type="GridContainer" parent="GameManager"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -122.0
-offset_top = -112.0
-offset_right = 123.0
+offset_left = -64.0
+offset_top = -88.0
+offset_right = 64.0
+offset_bottom = -46.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 8
@@ -208,18 +345,80 @@ size_flags_vertical = 8
 theme = SubResource("Theme_jvner")
 columns = 3
 
-[node name="RespawnButton" type="Button" parent="GameManager/GridContainer"]
+[node name="RespawnButton" type="Button" parent="GameManager/StartStopContainer"]
 visible = false
 layout_mode = 2
 text = "Respawn"
 
-[node name="StartButton" type="Button" parent="GameManager/GridContainer"]
+[node name="StartButton" type="Button" parent="GameManager/StartStopContainer"]
 layout_mode = 2
 text = "Start"
 
-[node name="StopButton" type="Button" parent="GameManager/GridContainer"]
+[node name="StopButton" type="Button" parent="GameManager/StartStopContainer"]
 layout_mode = 2
 text = "Stop"
+
+[node name="MenuButton" type="MenuButton" parent="GameManager" node_paths=PackedStringArray("menu")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -270.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 70.0
+grow_horizontal = 0
+theme = ExtResource("9_na70g")
+text = "Select scene"
+icon = ExtResource("9_vnlfk")
+flat = false
+expand_icon = true
+script = ExtResource("8_p7nm3")
+menu = NodePath(".")
+
+[node name="GuidePanel" type="Panel" parent="GameManager"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m0q4e")
+
+[node name="GuideText" type="Label" parent="GameManager"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -856.5
+offset_top = -276.0
+offset_right = 856.5
+offset_bottom = 276.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_axvkc")
+text = "Getting started:
+
+- Center your face in the frame using the python viewfinder
+- Use the \"Select Scene\" button to change scenes
+- Check the button at the top left of the screen to view and change scene specific settings"
+
+[node name="GuideButton" type="Button" parent="GameManager"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -400.0
+offset_top = 20.0
+offset_right = -300.0
+offset_bottom = 70.0
+grow_horizontal = 0
+text = "GUIDE"
 
 [node name="Score" type="Label" parent="GameManager"]
 layout_mode = 1
@@ -227,9 +426,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -72.0
-offset_top = 80.0
+offset_top = 40.0
 offset_right = 72.0
-offset_bottom = 128.0
+offset_bottom = 86.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 30
 text = "Score"
@@ -239,69 +438,13 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -56.0
-offset_right = 56.0
-offset_bottom = 32.0
+offset_left = -64.0
+offset_top = 20.0
+offset_right = 64.0
+offset_bottom = 50.0
 grow_horizontal = 2
 text = "Time"
-
-[node name="VBoxContainer" type="VBoxContainer" parent="GameManager"]
-layout_mode = 2
-offset_left = 32.0
-offset_top = 39.0
-offset_right = 264.0
-offset_bottom = 400.0
-theme = ExtResource("9_na70g")
-
-[node name="PlantformSensitivityLabel" type="Label" parent="GameManager/VBoxContainer"]
-layout_mode = 2
-text = "Sensitivity"
-
-[node name="PlatformSensetivity" type="HSlider" parent="GameManager/VBoxContainer"]
-layout_mode = 2
-min_value = 0.1
-max_value = 2.0
-step = 0.1
-value = 1.0
-
-[node name="ShrinkLabel" type="Label" parent="GameManager/VBoxContainer"]
-layout_mode = 2
-text = "Shrink rate"
-
-[node name="ShrinkRate" type="HSlider" parent="GameManager/VBoxContainer"]
-layout_mode = 2
-min_value = 0.95
-max_value = 1.0
-step = 0.01
-value = 0.95
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 stream = ExtResource("8_7kfcx")
-
-[node name="SceneManager" type="Control" parent="." node_paths=PackedStringArray("menu")]
-layout_mode = 3
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -200.0
-offset_bottom = 64.0
-grow_horizontal = 0
-script = ExtResource("8_p7nm3")
-menu = NodePath("MenuButton")
-
-[node name="MenuButton" type="MenuButton" parent="SceneManager"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.167
-anchor_right = 0.167
-offset_left = -102.4
-offset_top = 14.0
-offset_right = 102.6
-offset_bottom = 64.0
-grow_horizontal = 0
-theme = ExtResource("9_na70g")
-text = "Select scene"
-icon = ExtResource("9_vnlfk")
-flat = false
-expand_icon = true

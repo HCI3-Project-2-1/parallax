@@ -7,6 +7,7 @@ func _ready():
 	popup.add_item("Boxes")
 	popup.add_item("Tunnel")
 	popup.add_item("Balance")
+	popup.add_item("Sewer")
 	popup.id_pressed.connect(_on_menu_item_pressed)
 
 func _on_menu_item_pressed(id: int):
@@ -19,6 +20,8 @@ func _on_menu_item_pressed(id: int):
 			scene_path = "res://scenes/tunnel.tscn"
 		2: # Balance
 			scene_path = "res://scenes/balance.tscn"
+		3: # Sewer
+			scene_path = "res://scenes/sewer.tscn"
 	
 	if scene_path != "":
 		SceneManager.change_scene(

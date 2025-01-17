@@ -1,10 +1,10 @@
-[gd_scene load_steps=31 format=3 uid="uid://byb86rs8yvbu2"]
+[gd_scene load_steps=34 format=3 uid="uid://byb86rs8yvbu2"]
 
 [ext_resource type="Script" path="res://scripts/main_camera_scene2.gd" id="1_dfo1s"]
-[ext_resource type="Script" path="res://scripts/ui.gd" id="2_tg6qm"]
-[ext_resource type="Script" path="res://scenes/menu_button.gd" id="3_f215b"]
+[ext_resource type="Script" path="res://uiTunnel.gd" id="2_gfyoq"]
 [ext_resource type="Theme" uid="uid://bq22yreu3b56t" path="res://shaders/theme.tres" id="4_h1xly"]
 [ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="5_bakdl"]
+[ext_resource type="Script" path="res://scenes/menu_button.gd" id="5_dqdoa"]
 
 [sub_resource type="Environment" id="Environment_2a0ex"]
 background_mode = 1
@@ -80,6 +80,15 @@ albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6m8ty"]
 albedo_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkswk"]
+bg_color = Color(0.215902, 0.215902, 0.215902, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_epsay"]
+bg_color = Color(0.162065, 0.162066, 0.162065, 1)
+
+[sub_resource type="Theme" id="Theme_dv7ap"]
+default_font_size = 40
 
 [node name="Node3D" type="Node3D"]
 
@@ -245,164 +254,173 @@ operation = 2
 size = Vector3(8.4, 4.2, 1.5)
 material = SubResource("StandardMaterial3D_6m8ty")
 
-[node name="ui" type="Control" parent="." node_paths=PackedStringArray("main_camera", "third_person_camera")]
+[node name="ui" type="Control" parent="." node_paths=PackedStringArray("main_camera", "delay_label", "fixed_angle_toggle", "interpolation_toggle", "settings_visibility_toggle", "settings_container", "settings_panel", "opaque_panel", "menu_button", "guide_button", "guide_panel", "guide_text", "main_camera_sensitivity_slider", "main_camera_follow_speed_slider")]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.000898182
 size_flags_stretch_ratio = 0.0
-script = ExtResource("2_tg6qm")
+script = ExtResource("2_gfyoq")
 main_camera = NodePath("../Camera3D")
-third_person_camera = NodePath("../Camera3D")
+delay_label = NodePath("delay_label")
+fixed_angle_toggle = NodePath("SettingsPanel/SettingsContainer/fixed_angle_toggle")
+interpolation_toggle = NodePath("SettingsPanel/SettingsContainer/interpolation_toggle")
+settings_visibility_toggle = NodePath("SettingsPanel/SettingsVisibilityToggle")
+settings_container = NodePath("SettingsPanel/SettingsContainer")
+settings_panel = NodePath("SettingsPanel")
+opaque_panel = NodePath("OpaquePanel")
+menu_button = NodePath("MenuButton")
+guide_button = NodePath("GuideButton")
+guide_panel = NodePath("GuidePanel")
+guide_text = NodePath("GuideText")
+main_camera_sensitivity_slider = NodePath("SettingsPanel/SettingsContainer/main_camera_sensitivity_slider/main_camera_sensitivity_slider")
+main_camera_follow_speed_slider = NodePath("SettingsPanel/SettingsContainer/main_camera_follow_speed_slider/main_camera_follow_speed_slider")
 
-[node name="delay_label" type="Label" parent="ui"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 17.0
-offset_right = 73.0
-offset_bottom = 40.0
-text = "foo ms"
-
-[node name="third_person_view_toggle" type="CheckButton" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 55.0
-offset_right = 230.0
-offset_bottom = 85.0
-theme_override_font_sizes/font_size = 15
-text = "third person view"
-
-[node name="camera_output_toggle" type="CheckButton" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 85.4136
-offset_right = 230.0
-offset_bottom = 115.414
-theme_override_font_sizes/font_size = 15
-text = "camera output canvas"
-
-[node name="fixed_angle_toggle" type="CheckButton" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 115.827
-offset_right = 230.0
-offset_bottom = 154.827
-theme_override_font_sizes/font_size = 22
-button_pressed = true
-text = "fixed angle"
-
-[node name="interpolation_toggle" type="CheckButton" parent="ui"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 155.0
-offset_right = 305.0
-offset_bottom = 186.0
-button_pressed = true
-text = "linear interpolation smoothing"
-
-[node name="main_camera_sensitivity_slider" type="HSlider" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 201.0
-offset_right = 230.0
-offset_bottom = 217.0
-tooltip_text = "Main Camera Sensivity"
-min_value = 10.0
-step = 5.0
-value = 25.0
-rounded = true
-tick_count = 10
-ticks_on_borders = true
-
-[node name="label" type="Label" parent="ui/main_camera_sensitivity_slider"]
-layout_mode = 2
-offset_top = 20.0
-offset_right = 338.0
-offset_bottom = 43.0
-text = "main camera sensitivity"
-
-[node name="main_camera_follow_speed_slider" type="HSlider" parent="ui"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 250.713
-offset_right = 230.0
-offset_bottom = 266.713
-min_value = 1.0
-max_value = 20.0
-value = 20.0
-tick_count = 10
-
-[node name="Label" type="Label" parent="ui/main_camera_follow_speed_slider"]
-layout_mode = 0
-offset_top = 20.0
-offset_right = 204.0
-offset_bottom = 43.0
-text = "main camera follow speed"
-
-[node name="third_person_camera_sensitivity_slider" type="HSlider" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 300.713
-offset_right = 230.0
-offset_bottom = 316.713
-tooltip_text = "Third Person Camera Sensivity"
-min_value = 10.0
-step = 5.0
-value = 50.0
-rounded = true
-tick_count = 10
-ticks_on_borders = true
-
-[node name="label" type="Label" parent="ui/third_person_camera_sensitivity_slider"]
-layout_mode = 2
-offset_top = 20.0
-offset_right = 338.0
-offset_bottom = 43.0
-text = "third person camera sensivity"
-
-[node name="fov_slider" type="HSlider" parent="ui"]
-layout_mode = 2
-offset_left = 20.0
-offset_top = 350.713
-offset_right = 230.0
-offset_bottom = 366.713
-min_value = 1.0
-max_value = 170.0
-value = 120.0
-rounded = true
-
-[node name="Label" type="Label" parent="ui/fov_slider"]
-layout_mode = 0
-offset_top = 20.0
-offset_right = 25.0
-offset_bottom = 43.0
-text = "fov"
-
-[node name="SceneManager" type="Control" parent="." node_paths=PackedStringArray("menu")]
-layout_mode = 3
+[node name="MenuButton" type="MenuButton" parent="ui" node_paths=PackedStringArray("menu")]
+layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
-offset_bottom = 64.0
-grow_horizontal = 0
-script = ExtResource("3_f215b")
-menu = NodePath("MenuButton")
-
-[node name="MenuButton" type="MenuButton" parent="SceneManager"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.167
-anchor_right = 0.167
-offset_left = -102.4
-offset_top = 14.0
-offset_right = 102.6
-offset_bottom = 64.0
+offset_left = -270.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 70.0
 grow_horizontal = 0
 theme = ExtResource("4_h1xly")
 text = "Select scene"
 icon = ExtResource("5_bakdl")
 flat = false
 expand_icon = true
+script = ExtResource("5_dqdoa")
+menu = NodePath(".")
+
+[node name="delay_label" type="Label" parent="ui"]
+visible = false
+layout_mode = 2
+offset_left = 127.986
+offset_top = 16.115
+offset_right = 180.986
+offset_bottom = 39.115
+size_flags_vertical = 3
+text = "foo ms"
+
+[node name="OpaquePanel" type="Panel" parent="ui"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fkswk")
+
+[node name="SettingsPanel" type="VBoxContainer" parent="ui"]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 407.0
+offset_bottom = 1003.0
+scale = Vector2(2, 2)
+theme_override_constants/separation = 0
+
+[node name="SettingsVisibilityToggle" type="CheckButton" parent="ui/SettingsPanel"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_stretch_ratio = 1.43
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+
+[node name="SettingsContainer" type="VBoxContainer" parent="ui/SettingsPanel"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 27
+
+[node name="fixed_angle_toggle" type="CheckButton" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+button_pressed = true
+text = "fixed angle"
+
+[node name="interpolation_toggle" type="CheckButton" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+text = "linear interpolation smoothing"
+
+[node name="main_camera_sensitivity_slider" type="VBoxContainer" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="label" type="Label" parent="ui/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
+text = "main camera sensitivity:"
+
+[node name="main_camera_sensitivity_slider" type="HSlider" parent="ui/SettingsPanel/SettingsContainer/main_camera_sensitivity_slider"]
+layout_mode = 2
+tooltip_text = "Main Camera Sensivity"
+min_value = 10.0
+step = 5.0
+value = 25.0
+rounded = true
+ticks_on_borders = true
+
+[node name="main_camera_follow_speed_slider" type="VBoxContainer" parent="ui/SettingsPanel/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ui/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
+text = "main camera follow speed:"
+
+[node name="main_camera_follow_speed_slider" type="HSlider" parent="ui/SettingsPanel/SettingsContainer/main_camera_follow_speed_slider"]
+layout_mode = 2
+min_value = 1.0
+max_value = 20.0
+value = 20.0
+ticks_on_borders = true
+
+[node name="GuidePanel" type="Panel" parent="ui"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.901961)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_epsay")
+
+[node name="GuideButton" type="Button" parent="ui"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -400.019
+offset_top = 21.3652
+offset_right = -300.019
+offset_bottom = 71.3652
+grow_horizontal = 0
+text = "GUIDE"
+
+[node name="GuideText" type="Label" parent="ui"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -856.5
+offset_top = -276.0
+offset_right = 856.5
+offset_bottom = 276.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_dv7ap")
+text = "Getting started:
+
+- Center your face in the frame using the python viewfinder
+- Use the \"Select Scene\" button to change scenes
+- Check the button at the top left of the screen to view and change scene specific settings"
