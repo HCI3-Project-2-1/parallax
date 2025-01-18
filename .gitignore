@@ -7,5 +7,5 @@
 ./godot_project/.godot
 __pycache__
 /myenv
-/venv
+face_tracking/venv
 godot_project/.godot/
