@@ -7,3 +7,4 @@
 ./godot_project/.godot
 __pycache__
 /myenv
+godot_project/.godot/

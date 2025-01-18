@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/third_person_camera.gd" id="1_3m1w1"]
 [ext_resource type="Script" path="res://scripts/main_camera.gd" id="2_o8ms2"]
-[ext_resource type="Texture2D" uid="uid://di1plhdkug7pc" path="res://assests/textures/wooden_garage_door_diff_2k.png" id="3_xhy3j"]
-[ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://assests/textures/wooden_garage_door_nor_gl_2k.png" id="4_tkyfq"]
-[ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assests/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
+[ext_resource type="Texture2D" uid="uid://di1plhdkug7pc" path="res://assets/textures/wooden_garage_door_diff_2k.png" id="3_xhy3j"]
+[ext_resource type="Texture2D" uid="uid://d3ijnwmkw2yuh" path="res://assets/textures/wooden_garage_door_nor_gl_2k.png" id="4_tkyfq"]
+[ext_resource type="Texture2D" uid="uid://bgrvai8nwaxxx" path="res://assets/textures/wooden_garage_door_rough_2k.png" id="5_47awk"]
 [ext_resource type="PackedScene" uid="uid://do6yslistk8je" path="res://icons/UM_Logo.gltf" id="6_u1nx5"]
 [ext_resource type="Script" path="res://ui.gd" id="7_pmcir"]
 [ext_resource type="Texture2D" uid="uid://b7x3qxooitt0l" path="res://addons/scene_manager/icon.png" id="9_cij8c"]
