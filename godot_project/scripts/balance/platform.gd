@@ -29,7 +29,7 @@ func _physics_process(delta):
 		
 	var data = udp_server.take_connection().get_packet().get_string_from_utf8().split(" ")
 	
-	if not data.size() == 3:
+	if not data.size() == 4:
 		print("unexpected received data format, check parsing logic")
 		return
 		
@@ -41,8 +41,8 @@ func _physics_process(delta):
 	
 	last_packet_time_ms = current_time_ms
 		
-	var received_x = -float(data[0])
-	var received_y = float(data[1])
+	var received_x = -float(data[1])
+	var received_y = float(data[2])
 
 	# Convert received coordinates to rotation angles
 	var x_rotation = -received_y * x_tilt_sensitivity
