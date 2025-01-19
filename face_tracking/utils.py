@@ -68,7 +68,7 @@ def transform_to_godot_coords(screen_x, screen_y, frame_dimensions):
     """Transform detected keypoint screen coordinates to Godot's coordinate system."""
     # transform from image coordinate system (top-left origin) 
     # to screen coordinate system (center origin)
-    normalized_x = (screen_x / frame_dimensions[0]) * 2 - 1
-    normalized_y = -((screen_y / frame_dimensions[1]) * 2 - 1)
+    normalized_x = (screen_x / frame_dimensions[1]) * 2 - 1
+    normalized_y = -((screen_y / frame_dimensions[0]) * 2 - 1)
 
     return (normalized_x, normalized_y)
